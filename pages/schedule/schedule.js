@@ -1,4 +1,6 @@
 // pages/schedule/schedule.js
+const { addLog } = require('../../utils/operations')
+
 Page({
   data: {
     // 云数据库是否可用
@@ -10,6 +12,12 @@ Page({
 
     // 快捷日期
     dateFilters: [],
+
+    // 日期选择器
+    pickerDate: '',
+    pickerDateText: '',
+    pickerStart: '',
+    pickerEnd: '',
 
     // 所有课程数据
     allBookings: [],
@@ -23,10 +31,51 @@ Page({
 
   onLoad() {
     this.initDateFilters()
+    this.initPickerRange()
   },
 
   onShow() {
     this.fetchBookings()
+  },
+
+  // 初始化日期选择器范围（前3个月 ~ 后3个月）
+  initPickerRange() {
+    const today = new Date()
+    const start = new Date(today)
+    start.setMonth(today.getMonth() - 3)
+    const end = new Date(today)
+    end.setMonth(today.getMonth() + 3)
+    this.setData({
+      pickerDate: this.formatDate(today),
+      pickerDateText: '今天',
+      pickerStart: this.formatDate(start),
+      pickerEnd: this.formatDate(end)
+    })
+  },
+
+  // 日期选择器变化
+  onPickerDateChange(e) {
+    const dateStr = e.detail.value
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六']
+    const d = new Date(dateStr.replace(/-/g, '/'))
+    const month = d.getMonth() + 1
+    const day = d.getDate()
+    const week = weekDays[d.getDay()]
+    const label = month + '/' + day + ' 周' + week
+
+    const todayStr = this.formatDate(new Date())
+    if (dateStr === todayStr) {
+      this.setData({ pickerDateText: '今天' })
+    } else {
+      this.setData({ pickerDateText: label })
+    }
+
+    this.setData({
+      pickerDate: dateStr,
+      filterDate: dateStr,
+      filterLabel: label
+    })
+    this.applyFilter()
   },
 
   // 初始化快捷日期筛选
@@ -60,27 +109,36 @@ Page({
     return y + '-' + m + '-' + day
   },
 
-  // 从云数据库查询预约
+  // 从云数据库查询当前用户的预约
   fetchBookings() {
     this.setData({ loading: true })
 
-    // 检查云开发是否可用
+    // 获取当前用户昵称
+    const userInfo = wx.getStorageSync('userInfo') || {}
+    const currentNickName = userInfo.nickName || ''
+
     if (!wx.cloud) {
       this.setData({ loading: false, cloudReady: false, isEmpty: true })
-      return
+      return Promise.resolve()
     }
 
     const db = wx.cloud.database()
-    db.collection('bookings')
+    return db.collection('bookings')
       .orderBy('bookingDate', 'asc')
       .orderBy('bookingTime', 'asc')
       .limit(100)
       .get()
       .then(res => {
-        const bookings = res.data.map(item => ({
-          ...item,
-          phoneMasked: this.maskPhone(item.phone || '')
-        }))
+        let bookings = res.data
+          .filter(item => item.status !== 'cancelled')
+          .map(item => ({
+            ...item,
+            phoneMasked: this.maskPhone(item.phone || '')
+          }))
+        // 只保留当前用户的预约（匹配 userNickName）
+        if (currentNickName) {
+          bookings = bookings.filter(item => item.userNickName === currentNickName)
+        }
         this.setData({
           allBookings: bookings,
           cloudReady: true,
@@ -90,7 +148,6 @@ Page({
       })
       .catch(err => {
         console.error('查询预约失败：', err)
-        // 如果集合不存在或权限不足，用本地存储兜底
         this.loadFromStorage()
       })
   },
@@ -98,7 +155,14 @@ Page({
   // 本地存储兜底
   loadFromStorage() {
     try {
-      const localData = wx.getStorageSync('bookings') || []
+      const userInfo = wx.getStorageSync('userInfo') || {}
+      const currentNickName = userInfo.nickName || ''
+      let localData = wx.getStorageSync('bookings') || []
+      // 过滤已取消的
+      localData = localData.filter(item => item.status !== 'cancelled')
+      if (currentNickName) {
+        localData = localData.filter(item => item.userNickName === currentNickName)
+      }
       const bookings = localData.map(item => ({
         ...item,
         phoneMasked: this.maskPhone(item.phone || '')
@@ -192,6 +256,85 @@ Page({
   // 跳转预约
   goBook() {
     wx.reLaunch({ url: '/pages/book/book' })
+  },
+
+  // 用户取消预约
+  cancelBooking(e) {
+    const { id } = e.currentTarget.dataset
+    const booking = this.findBookingById(id)
+    if (!booking) return
+
+    wx.showModal({
+      title: '取消预约',
+      content: `确定要取消【${booking.serviceName}】的预约吗？`,
+      confirmColor: '#D48B8B',
+      success: (res) => {
+        if (res.confirm) {
+          this.doCancel(id, booking)
+        }
+      }
+    })
+  },
+
+  // 查找预约记录
+  findBookingById(id) {
+    for (const group of this.data.displayBookings) {
+      for (const item of group.items) {
+        if (item._id === id) return item
+      }
+    }
+    return null
+  },
+
+  // 执行取消
+  doCancel(id, booking) {
+    const userInfo = wx.getStorageSync('userInfo') || {}
+    const now = new Date().toLocaleString('zh-CN', { hour12: false })
+
+    if (this.data.cloudReady && wx.cloud) {
+      const db = wx.cloud.database()
+      db.collection('bookings').doc(id).update({
+        data: { status: 'cancelled', cancelTime: now, cancelBy: userInfo.nickName || '' }
+      }).then(() => {
+        this.onCancelSuccess(id, booking, now, userInfo)
+      }).catch(() => {
+        this.cancelLocal(id, booking, now, userInfo)
+      })
+    } else {
+      this.cancelLocal(id, booking, now, userInfo)
+    }
+  },
+
+  // 本地取消
+  cancelLocal(id, booking, now, userInfo) {
+    try {
+      const localData = wx.getStorageSync('bookings') || []
+      const idx = localData.findIndex(b => (b._id === id || b.createTime === booking.createTime))
+      if (idx >= 0) {
+        localData[idx].status = 'cancelled'
+        localData[idx].cancelTime = now
+        localData[idx].cancelBy = userInfo.nickName || ''
+        wx.setStorageSync('bookings', localData)
+      }
+      this.onCancelSuccess(id, booking, now, userInfo)
+    } catch (e) {
+      wx.showToast({ title: '取消失败', icon: 'none' })
+    }
+  },
+
+  onCancelSuccess(id, booking, now, userInfo) {
+    // 记录操作日志
+    addLog('cancel_by_user', {
+      nickName: userInfo.nickName || booking.name || '用户',
+      serviceName: booking.serviceName,
+      bookingDate: booking.bookingDate,
+      bookingTime: booking.bookingTime,
+      time: now
+    })
+
+    // 刷新列表
+    this.fetchBookings()
+    wx.showToast({ title: '已取消', icon: 'success' })
   },
 
   onPullDownRefresh() {

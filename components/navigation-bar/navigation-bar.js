@@ -59,17 +59,28 @@ Component({
   },
   lifetimes: {
     attached() {
-      const rect = wx.getMenuButtonBoundingClientRect()
-      const platform = (wx.getDeviceInfo() || wx.getSystemInfoSync()).platform
-      const isAndroid = platform === 'android'
-      const isDevtools = platform === 'devtools'
-      const { windowWidth, safeArea: { top = 0, bottom = 0 } = {} } = wx.getWindowInfo() || wx.getSystemInfoSync()
-      this.setData({
-        ios: !isAndroid,
-        innerPaddingRight: `padding-right: ${windowWidth - rect.left}px`,
-        leftWidth: `width: ${windowWidth - rect.left}px`,
-        safeAreaTop: isDevtools || isAndroid ? `height: calc(var(--height) + ${top}px); padding-top: ${top}px` : ``
-      })
+      try {
+        const rect = wx.getMenuButtonBoundingClientRect()
+        const sysInfo = wx.getSystemInfoSync()
+        const platform = sysInfo.platform || ''
+        const isAndroid = platform === 'android'
+        const windowWidth = sysInfo.windowWidth || 375
+        const top = (sysInfo.safeArea && sysInfo.safeArea.top) || 0
+        const navHeight = isAndroid ? 48 : 44
+        this.setData({
+          ios: !isAndroid,
+          innerPaddingRight: `padding-right: ${windowWidth - (rect.left || 87)}px`,
+          leftWidth: `width: ${windowWidth - (rect.left || 87)}px`,
+          safeAreaTop: `height: calc(${navHeight}px + ${top}px); padding-top: ${top}px`
+        })
+      } catch (e) {
+        this.setData({
+          ios: true,
+          innerPaddingRight: '',
+          leftWidth: '',
+          safeAreaTop: ''
+        })
+      }
     },
   },
   /**

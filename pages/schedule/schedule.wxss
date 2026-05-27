@@ -11,13 +11,59 @@ page {
 .filter-bar {
   flex-shrink: 0;
   background: #FFFFFF;
-  padding: 20rpx 0;
+  padding: 16rpx 0;
   border-bottom: 1rpx solid #F5F0EB;
 }
 
+.filter-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 日期选择器按钮 */
+.picker-wrapper {
+  flex-shrink: 0;
+}
+
+.picker-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 20rpx;
+  margin-left: 24rpx;
+  background: linear-gradient(135deg, #FDF0F0, #FDF8F5);
+  border: 1rpx solid #F5E6E6;
+  border-radius: 32rpx;
+}
+
+.picker-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.picker-label {
+  font-size: 24rpx;
+  color: #D48B8B;
+  font-weight: 500;
+  max-width: 160rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-arrow {
+  font-size: 18rpx;
+  color: #D48B8B;
+  margin-left: 8rpx;
+  opacity: 0.6;
+}
+
 .filter-scroll {
-  width: 100%;
-  height: 60rpx;
+  flex: 1;
+  height: 64rpx;
+  margin-left: 8rpx;
 }
 
 .filter-list {
@@ -224,39 +270,34 @@ page {
 
 .course-body {
   flex: 1;
-  padding: 22rpx 22rpx;
+  padding: 20rpx 20rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  overflow: hidden;
 }
 
-.course-header {
+.course-top-row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 12rpx;
-  gap: 16rpx;
 }
 
 .course-tag {
   font-size: 26rpx;
   font-weight: 600;
-  padding: 4rpx 16rpx;
+  padding: 8rpx 16rpx;
   border-radius: 8rpx;
-  flex-shrink: 1;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.course-price {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #D48B8B;
-  flex-shrink: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  word-break: break-all;
+  line-height: 1.5;
 }
 
 .course-info {
@@ -316,4 +357,40 @@ page {
 /* 底部占位 */
 .schedule-bottom {
   height: 24rpx;
+}
+
+/* ====== 操作按钮区域 ====== */
+.course-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 16rpx;
+  flex-shrink: 0;
+}
+
+.course-price {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #D48B8B;
+}
+
+.cancel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90rpx;
+  height: 56rpx;
+  border-radius: 28rpx;
+  border: 2rpx solid #E0D6D0;
+  background: #FFF;
+  font-size: 24rpx;
+  color: #999;
+  transition: all 0.2s;
+}
+
+.cancel-btn:active {
+  border-color: #D48B8B;
+  color: #D48B8B;
+  background: #FDF8F8;
 }

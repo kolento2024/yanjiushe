@@ -3,6 +3,19 @@
 
 <scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
 
+  <!-- 日期筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-row">
+      <picker class="picker-wrapper" mode="date" value="{{pickerDate}}" bindchange="onPickerDateChange">
+        <view class="picker-btn">
+          <text class="picker-icon">📅</text>
+          <text class="picker-label">{{pickerDateText || '选择日期'}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
   <!-- 预约表单 -->
   <view class="book-form" wx:if="{{!showSuccess}}">
 
@@ -38,14 +51,22 @@
           bindtap="selectService"
           data-id="{{item.id}}"
         >
-          <view class="service-option-left">
-            <text class="service-option-name">{{item.name}}</text>
-            <text class="service-option-time">{{item.time}}</text>
-          </view>
-          <view class="service-option-right">
-            <text class="service-option-price">¥{{item.price}}</text>
-            <view class="radio-circle {{selectedServiceId === item.id ? 'checked' : ''}}">
-              <text wx:if="{{selectedServiceId === item.id}}" class="radio-dot">✓</text>
+          <image class="service-option-img" src="{{item.icon}}" mode="aspectFill" />
+          <view class="service-option-body">
+            <view class="service-option-left">
+              <view class="service-top-row">
+                <view class="service-option-name">{{item.name}}</view>
+              </view>
+              <text class="service-option-desc">{{item.desc}}</text>
+              <view class="service-option-bottom">
+                <text class="service-option-time">⏱ {{item.time}}</text>
+              </view>
+            </view>
+            <view class="service-option-right">
+              <text class="service-option-price">¥{{item.price}}</text>
+              <view class="radio-circle {{selectedServiceId === item.id ? 'checked' : ''}}">
+                <text wx:if="{{selectedServiceId === item.id}}" class="radio-dot">✓</text>
+              </view>
             </view>
           </view>
         </view>
@@ -80,17 +101,19 @@
       <view class="form-section-title">
         <text class="title-icon">🕐</text>
         <text>选择时段</text>
-        <text class="time-range">（9:00 - 21:00）</text>
+        <text class="time-range">（9:00 - 19:00）</text>
       </view>
       <view class="time-grid">
         <view
-          class="time-item {{selectedTime === item.value ? 'selected' : ''}}"
+          class="time-item {{item.disabled ? 'disabled' : ''}} {{selectedTime === item.value ? 'selected' : ''}}"
           wx:for="{{timeSlots}}"
           wx:key="value"
           bindtap="selectTime"
           data-time="{{item.value}}"
+          data-disabled="{{item.disabled}}"
         >
-          <text>{{item.label}}</text>
+          <text wx:if="{{!item.disabled}}">{{item.label}}</text>
+          <text wx:else>{{item.label}} ({{item.disabledReason}})</text>
         </view>
       </view>
     </view>

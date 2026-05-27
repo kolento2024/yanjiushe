@@ -3,17 +3,28 @@
 
 <!-- 日期筛选栏 -->
 <view class="filter-bar">
-  <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
-    <view class="filter-list">
-      <view
-        class="filter-tag {{filterDate === item.date ? 'active' : ''}}"
-        wx:for="{{dateFilters}}"
-        wx:key="date"
-        bindtap="filterByDate"
-        data-date="{{item.date}}"
-      >{{item.label}}</view>
-    </view>
-  </scroll-view>
+  <view class="filter-row">
+    <!-- 日期选择器 -->
+    <picker class="picker-wrapper" mode="date" value="{{pickerDate}}" start="{{pickerStart}}" end="{{pickerEnd}}" bindchange="onPickerDateChange">
+      <view class="picker-btn">
+        <text class="picker-icon">📅</text>
+        <text class="picker-label">{{pickerDateText || '选择日期'}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+    <!-- 快捷筛选 -->
+    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-list">
+        <view
+          class="filter-tag {{filterDate === item.date ? 'active' : ''}}"
+          wx:for="{{dateFilters}}"
+          wx:key="date"
+          bindtap="filterByDate"
+          data-date="{{item.date}}"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+  </view>
 </view>
 
 <!-- 内容区域 -->
@@ -55,11 +66,11 @@
             <text class="course-time-end">{{booking.bookingEndTime || ''}}</text>
           </view>
           <view class="course-body">
-            <view class="course-header">
+            <view class="course-top-row">
               <view class="course-tag" style="background: {{booking.serviceColor || '#D48B8B'}}20; color: {{booking.serviceColor || '#D48B8B'}}">
                 {{booking.serviceName}}
               </view>
-              <text class="course-price">¥{{booking.servicePrice}}</text>
+              
             </view>
             <view class="course-info">
               <view class="course-info-item">
@@ -74,6 +85,12 @@
                 <text class="remark-icon">📝</text>
                 <text class="remark-text">{{booking.remark}}</text>
               </view>
+            </view>
+          </view>
+          <view class="course-action">
+            <view class="course-price">¥{{booking.servicePrice}}</view>
+            <view class="cancel-btn" bindtap="cancelBooking" data-id="{{booking._id}}">
+              <text>取消</text>
             </view>
           </view>
         </view>

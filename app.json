@@ -4,7 +4,9 @@
     "pages/book/book",
     "pages/my/my",
     "pages/schedule/schedule",
-    "pages/message/message"
+    "pages/message/message",
+    "pages/roster/roster",
+    "pages/log/log"
   ],
   "window": {
     "navigationBarTextStyle": "black",

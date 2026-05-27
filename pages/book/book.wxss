@@ -5,6 +5,60 @@ page {
   flex-direction: column;
 }
 
+/* ====== 日期筛选栏 ====== */
+.filter-bar {
+  flex-shrink: 0;
+  background: #FFFFFF;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F0EB;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.picker-wrapper {
+  flex-shrink: 0;
+}
+
+.picker-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 20rpx;
+  margin-left: 24rpx;
+  background: linear-gradient(135deg, #FDF0F0, #FDF8F5);
+  border: 1rpx solid #F5E6E6;
+  border-radius: 32rpx;
+}
+
+.picker-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.picker-label {
+  font-size: 24rpx;
+  color: #D48B8B;
+  font-weight: 500;
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-arrow {
+  font-size: 18rpx;
+  color: #D48B8B;
+  margin-left: 8rpx;
+  opacity: 0.6;
+}
+
+/* ====== 滚动区域 ====== */
+
 .scrollarea {
   flex: 1;
 }
@@ -68,8 +122,8 @@ page {
   margin: 0 24rpx 0;
   padding: 32rpx 28rpx;
   background: #FFF;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(212, 139, 139, 0.1);
   margin-bottom: 24rpx;
 }
 
@@ -108,12 +162,12 @@ page {
 .service-option {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx 20rpx;
+  align-items: stretch;
+  padding: 0;
   border: 2rpx solid #F5F0EB;
   border-radius: 16rpx;
   margin-bottom: 16rpx;
+  overflow: hidden;
   transition: all 0.3s;
 }
 
@@ -126,39 +180,100 @@ page {
   background: #FDF8F8;
 }
 
+.service-option-img {
+  width: 140rpx;
+  height: 140rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.service-option-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 20rpx 20rpx 20rpx;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .service-option-left {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  padding-right: 12rpx;
+}
+
+.service-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.service-option-price {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #D48B8B;
+  flex-shrink: 0;
+  margin-bottom: 16rpx;
 }
 
 .service-option-name {
-  font-size: 30rpx;
-  font-weight: 500;
-  color: #3D3D3D;
-  margin-bottom: 6rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #D48B8B;
+  background: rgba(212, 139, 139, 0.12);
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.service-option-desc {
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.service-option-bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
 }
 
 .service-option-time {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: #BBB;
 }
 
 .service-option-right {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-}
-
-.service-option-price {
-  font-size: 34rpx;
-  font-weight: 700;
-  color: #D48B8B;
-  margin-right: 16rpx;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 32rpx 0;
+  margin-left: 16rpx;
 }
 
 .radio-circle {
-  width: 44rpx;
-  height: 44rpx;
+  width: 40rpx;
+  height: 40rpx;
   border: 2rpx solid #E0D6D0;
   border-radius: 50%;
   display: flex;
@@ -173,7 +288,7 @@ page {
 }
 
 .radio-dot {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #FFF;
   font-weight: 700;
 }
@@ -267,6 +382,11 @@ page {
   background: linear-gradient(135deg, #D48B8B, #C07474);
   color: #FFF;
   font-weight: 600;
+}
+
+.time-item.disabled {
+  background: #F0EBE6;
+  color: #CCC;
 }
 
 /* ====== 输入框 ====== */
@@ -370,8 +490,8 @@ page {
 .success-card {
   width: 100%;
   background: #FFF;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(212, 139, 139, 0.1);
   padding: 60rpx 40rpx 48rpx;
   display: flex;
   flex-direction: column;

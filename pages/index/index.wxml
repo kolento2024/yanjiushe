@@ -32,18 +32,20 @@
           bindtap="goBookWithService"
           data-id="{{item.id}}"
         >
-          <text class="service-icon">{{item.icon}}</text>
-          <text class="service-name">{{item.name}}</text>
-          <text class="service-desc">{{item.desc}}</text>
-          <view class="service-features">
-            <text class="feature-tag" wx:for="{{item.features}}" wx:for-item="f" wx:key="*this">{{f}}</text>
-          </view>
-          <view class="service-bottom">
-            <view class="service-price-wrap">
-              <text class="service-price-symbol">¥</text>
-              <text class="service-price">{{item.price}}</text>
+          <image class="service-cover" src="{{item.icon}}" mode="aspectFill" />
+          <view class="service-info">
+            <text class="service-name">{{item.name}}</text>
+            <text class="service-desc">{{item.desc}}</text>
+            <view class="service-features">
+              <text class="feature-tag" wx:for="{{item.features}}" wx:for-item="f" wx:key="*this">{{f}}</text>
             </view>
-            <text class="service-time">{{item.time}}</text>
+            <view class="service-bottom">
+              <view class="service-price-wrap">
+                <text class="service-price-symbol">¥</text>
+                <text class="service-price">{{item.price}}</text>
+              </view>
+              <text class="service-time">{{item.time}}</text>
+            </view>
           </view>
         </view>
       </view>

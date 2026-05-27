@@ -124,12 +124,12 @@ page {
   box-sizing: border-box;
   width: calc(50% - 12rpx);
   background: #FFF;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 32rpx 24rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(212, 139, 139, 0.1);
   margin-bottom: 24rpx;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   transition: all 0.3s;
 }
 
@@ -138,9 +138,18 @@ page {
   box-shadow: 0 4rpx 16rpx rgba(212, 139, 139, 0.15);
 }
 
-.service-icon {
-  font-size: 48rpx;
-  margin-bottom: 16rpx;
+.service-cover {
+  width: 100%;
+  height: 200rpx;
+  flex-shrink: 0;
+  display: block;
+}
+
+.service-info {
+  padding: 24rpx 22rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .service-name {
@@ -210,6 +219,7 @@ page {
   display: flex;
   flex-direction: row;
   white-space: nowrap;
+  height: 260rpx;
 }
 
 .review-card {
@@ -217,8 +227,8 @@ page {
   flex-direction: column;
   width: 520rpx;
   background: #FFF;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(212, 139, 139, 0.1);
   padding: 32rpx;
   margin-right: 24rpx;
   white-space: normal;
@@ -279,7 +289,7 @@ page {
 
 .cta-card {
   background: linear-gradient(135deg, #FDF0F0 0%, #FDF8F5 50%, #F9E4E4 100%);
-  border-radius: var(--radius-lg);
+  border-radius: 24rpx;
   padding: 44rpx 36rpx;
   display: flex;
   flex-direction: column;

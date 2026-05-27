@@ -4,57 +4,75 @@ Page({
     services: [
       {
         id: 1,
-        name: '日常妆容',
-        icon: '💄',
-        desc: '适合通勤、约会等日常场合',
-        price: 198,
-        time: '约60分钟',
-        features: ['自然清透', '持久不脱妆', '修饰脸型']
+        name: '【4节课】一对一化妆私教课',
+        icon: '/images/common/item1.png',
+        desc: '化妆私教课基础课程，实现美丽不求人',
+        price: 980,
+        time: '约120分钟',
+        features: []
       },
       {
         id: 2,
-        name: '新娘妆',
-        icon: '👰',
-        desc: '一生一次的重要时刻，精致不将就',
-        price: 888,
-        time: '约120分钟',
-        features: ['试妆服务', '奢华头饰', '全天跟妆']
+        name: '【主题妆】主持人妆+舞台妆+晚宴妆+应援妆+空乘妆',
+        icon: '/images/common/item2.png',
+        desc: '包含（妆+发），一生一次的重要时刻，精致不将就',
+        price: 228,
+        time: '约90分钟',
+        features: []
       },
       {
         id: 3,
-        name: '舞台妆',
-        icon: '✨',
-        desc: '舞台表演、年会等场合专属妆容',
-        price: 368,
+        name: '【新客大促】伪素颜+艺考妆+白开水+裸妆+淡妆',
+        icon: '/images/common/item3.png',
+        desc: '新客超优惠，包含（妆+发）',
+        price: 188,
         time: '约90分钟',
-        features: ['立体修容', '舞台灯光适配', '持久定型']
+        features: []
       },
       {
         id: 4,
-        name: '晚宴妆',
-        icon: '🌙',
-        desc: '晚宴、派对等重要社交场合',
-        price: 398,
-        time: '约80分钟',
-        features: ['精致眼妆', '高级感底妆', '造型搭配建议']
+        name: '【人气爆款】精致韩妆+网感妆+上镜妆+千金妆',
+        icon: '/images/common/item4.png',
+        desc: '包含（妆+发）',
+        price: 198,
+        time: '约90分钟',
+        features: []
       },
       {
         id: 5,
-        name: '男士妆',
-        icon: '🤵',
-        desc: '自然无痕的男士专属妆容',
-        price: 168,
-        time: '约45分钟',
-        features: ['无痕自然', '遮瑕修饰', '提升气色']
+        name: '【1v1化妆私教】化妆体验课-2h',
+        icon: '/images/common/item5.png',
+        desc: '体验课程',
+        price: 158,
+        time: '约120分钟',
+        features: []
       },
       {
         id: 6,
-        name: '试妆体验',
-        icon: '🎨',
-        desc: '提前感受效果，沟通妆容需求',
-        price: 99,
-        time: '约40分钟',
-        features: ['妆前沟通', '风格定位', '免费咨询']
+        name: '【人气首选】韩系妆+日系妆+水光妆+纯欲妆+雷系妆',
+        icon: '/images/common/item6.png',
+        desc: '多种人气妆容任你选',
+        price: 188,
+        time: '约90分钟',
+        features: []
+      },
+      {
+        id: 7,
+        name: '【6节课】一对一化妆提升私教课',
+        icon: '/images/common/item1.png',
+        desc: '私教提升课，进一步提升您的化妆技巧',
+        price: 1280,
+        time: '约120分钟',
+        features: []
+      },
+      {
+        id: 8,
+        name: '【top风格妆】亚裔妆+清泰妆+古早烟熏+千禧辣妹',
+        icon: '/images/common/item7.png',
+        desc: '多种人气妆容任你选',
+        price: 258,
+        time: '约90分钟',
+        features: []
       }
     ],
     reviews: [

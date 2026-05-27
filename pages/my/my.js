@@ -9,17 +9,22 @@ Page({
     },
     // 菜单列表
     menus: [
-      { key: 'schedule', icon: '📋', label: '课程表', desc: '查看预约记录' },
+      { key: 'schedule', icon: '📋', label: '课程表', desc: '查看我的预约' },
+      { key: 'roster', icon: '📅', label: '排班表', desc: '查看全部学员预约' },
+      { key: 'log', icon: '📝', label: '操作日志', desc: '预约与取消记录' },
       { key: 'message', icon: '💬', label: '消息', desc: '查看消息通知' }
     ]
   },
 
   onLoad() {
+    this._loaded = true
     this.loadUserInfo()
   },
 
   onShow() {
-    this.loadUserInfo()
+    if (!this._loaded) {
+      this.loadUserInfo()
+    }
   },
 
   // 加载本地缓存的用户信息
@@ -76,6 +81,8 @@ Page({
     const { key } = e.currentTarget.dataset
     const urlMap = {
       schedule: '/pages/schedule/schedule',
+      roster: '/pages/roster/roster',
+      log: '/pages/log/log',
       message: '/pages/message/message'
     }
     wx.navigateTo({ url: urlMap[key] })
