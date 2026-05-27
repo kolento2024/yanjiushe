@@ -170,6 +170,33 @@ page {
   font-weight: 300;
 }
 
+/* ====== 订阅通知 ====== */
+.subscribe-item {
+  margin-top: 16rpx;
+}
+
+.subscribe-item:last-child {
+  border-bottom: none;
+}
+
+.subscribe-badge {
+  flex-shrink: 0;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.subscribe-badge.on {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.subscribe-badge.off {
+  background: #F5F0EB;
+  color: #999;
+}
+
 /* 底部占位 */
 .bottom-space {
   height: 32rpx;

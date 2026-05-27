@@ -1,5 +1,6 @@
 // pages/book/book.js
 const { addLog } = require('../../utils/operations')
+const { notifyShopOwner } = require('../../utils/notify')
 
 Page({
   data: {
@@ -403,7 +404,9 @@ Page({
   // 批量保存预约
   saveBookings(bookingList, index, selectedService) {
     if (index >= bookingList.length) {
-      // 全部保存完成
+      // 全部保存完成 → 通知店长
+      notifyShopOwner('new_booking', bookingList[0])
+
       const timesText = bookingList.map(b => b.bookingTime).join('、')
       this.setData({
         submitting: false,

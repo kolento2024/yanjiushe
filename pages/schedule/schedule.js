@@ -1,5 +1,6 @@
 // pages/schedule/schedule.js
 const { addLog } = require('../../utils/operations')
+const { notifyShopOwner } = require('../../utils/notify')
 
 Page({
   data: {
@@ -330,6 +331,16 @@ Page({
       bookingDate: booking.bookingDate,
       bookingTime: booking.bookingTime,
       time: now
+    })
+
+    // 通知店长
+    notifyShopOwner('cancel_booking', {
+      serviceName: booking.serviceName,
+      dateText: booking.dateText || booking.bookingDate,
+      bookingTime: booking.bookingTime,
+      name: booking.name || userInfo.nickName,
+      phone: booking.phone || '',
+      cancelBy: userInfo.nickName || '客户'
     })
 
     // 刷新列表
