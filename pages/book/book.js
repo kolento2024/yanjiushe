@@ -74,7 +74,7 @@ Page({
     // 选中状态
     selectedServiceId: 0,
     selectedDate: '',
-    selectedTime: '',
+    selectedTimes: [],
     dateText: '',
     name: '',
     phone: '',
@@ -83,10 +83,6 @@ Page({
     // 日期相关
     weekDays: ['日', '一', '二', '三', '四', '五', '六'],
     dateList: [],
-
-    // 日期选择器
-    pickerDate: '',
-    pickerDateText: '选择日期',
 
     // 时段
     timeSlots: [],
@@ -100,8 +96,14 @@ Page({
   onLoad(options) {
     this._firstLoad = true
     this.initDateList()
-    this.initPicker()
     this.generateTimeSlots()
+
+    // 默认选中今天
+    const todayStr = this.formatDate(new Date())
+    this.setData({
+      selectedDate: todayStr,
+      dateText: '今天'
+    })
 
     if (options.serviceId) {
       this.setData({
@@ -109,8 +111,9 @@ Page({
       })
     }
 
-    // 检查登录状态
+    // 检查登录状态 & 加载时段冲突
     this.checkLogin()
+    this.checkTimeConflicts(todayStr)
   },
 
   onShow() {
@@ -137,39 +140,6 @@ Page({
         }
       })
     }
-  },
-
-  // 初始化日期选择器
-  initPicker() {
-    const today = new Date()
-    this.setData({
-      pickerDate: this.formatDate(today),
-      pickerDateText: '今天'
-    })
-  },
-
-  // 日期选择器变化
-  onPickerDateChange(e) {
-    const dateStr = e.detail.value
-    const d = new Date(dateStr.replace(/-/g, '/'))
-    const month = d.getMonth() + 1
-    const day = d.getDate()
-    const week = this.data.weekDays[d.getDay()]
-    const label = month + '月' + day + '日 周' + week
-
-    const todayStr = this.formatDate(new Date())
-    this.setData({
-      pickerDate: dateStr,
-      pickerDateText: dateStr === todayStr ? '今天' : label
-    })
-
-    // 自动选中日期
-    this.setData({
-      selectedDate: dateStr,
-      selectedTime: '',
-      dateText: label
-    })
-    this.checkTimeConflicts(dateStr)
   },
 
   // 生成未来约3个月（90天）日期
@@ -218,7 +188,8 @@ Page({
       slots.push({
         value: start,
         label: start + ' - ' + end,
-        disabled: false
+        disabled: false,
+        selected: false
       })
     }
     this.setData({ timeSlots: slots })
@@ -228,42 +199,68 @@ Page({
   selectDate(e) {
     const { date } = e.currentTarget.dataset
     const item = this.data.dateList.find(d => d.date === date)
+    // 切换日期时清空已选时段
+    const timeSlots = this.data.timeSlots.map(s => ({ ...s, selected: false }))
     this.setData({
       selectedDate: date,
-      selectedTime: '',
-      dateText: item ? item.month + '月' + item.day + '日 周' + item.weekDay : date
+      selectedTimes: [],
+      dateText: item ? item.month + '月' + item.day + '日 周' + item.weekDay : date,
+      timeSlots
     })
     // 检查该日期的时间冲突
     this.checkTimeConflicts(date)
   },
 
-  // 选择时段
+  // 选择时段（多选）
   selectTime(e) {
     const { time, disabled } = e.currentTarget.dataset
     if (disabled) return
-    this.setData({ selectedTime: time })
+    const selectedTimes = [...this.data.selectedTimes]
+    const idx = selectedTimes.indexOf(time)
+    if (idx > -1) {
+      selectedTimes.splice(idx, 1)
+    } else {
+      selectedTimes.push(time)
+    }
+    selectedTimes.sort()
+    // 直接修改 slot 的 selected 状态，避免 WXML 中逐个计算引发闪烁
+    const timeSlots = this.data.timeSlots.map(s => ({
+      ...s,
+      selected: selectedTimes.indexOf(s.value) !== -1
+    }))
+    this.setData({ selectedTimes, timeSlots })
   },
 
   // 检查指定日期已被预约的时段，以及今天已过去的时间
   checkTimeConflicts(date) {
-    // 先重置所有时段
-    const slots = this.data.timeSlots.map(s => ({ ...s, disabled: false }))
+    // 重置 disabled 状态但保留 selected
+    const slots = this.data.timeSlots.map(s => ({
+      ...s,
+      disabled: false,
+      disabledReason: '',
+      selected: this.data.selectedTimes.indexOf(s.value) !== -1
+    }))
     this.setData({ timeSlots: slots })
 
-    // 尝试从云端查询
+    // 带超时的云查询
+    const queryWithTimeout = (promise, ms = 8000) => {
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('查询超时')), ms)
+      )
+      return Promise.race([promise, timeout])
+    }
+
     const queryCloud = () => {
-      return new Promise((resolve, reject) => {
-        if (!wx.cloud) {
-          reject(new Error('云开发未初始化'))
-          return
-        }
-        const db = wx.cloud.database()
+      if (!wx.cloud) {
+        return Promise.reject(new Error('云开发未初始化'))
+      }
+      const db = wx.cloud.database()
+      return queryWithTimeout(
         db.collection('bookings')
           .where({ bookingDate: date })
           .get()
-          .then(res => resolve(res.data))
-          .catch(reject)
-      })
+          .then(res => res.data)
+      )
     }
 
     queryCloud()
@@ -301,7 +298,7 @@ Page({
           disabledReason = '已过时'
         }
       }
-      return { ...s, disabled, disabledReason }
+      return { ...s, disabled, disabledReason, selected: this.data.selectedTimes.indexOf(s.value) !== -1 }
     })
     this.setData({ timeSlots: slots })
   },
@@ -331,7 +328,7 @@ Page({
 
   // 提交预约
   submitBooking() {
-    const { selectedServiceId, selectedDate, selectedTime, name, phone, remark } = this.data
+    const { selectedServiceId, selectedDate, selectedTimes, name, phone, remark } = this.data
 
     // 获取当前登录用户昵称
     const userInfo = wx.getStorageSync('userInfo') || {}
@@ -357,7 +354,7 @@ Page({
       wx.showToast({ title: '请选择日期', icon: 'none' })
       return
     }
-    if (!selectedTime) {
+    if (!selectedTimes || selectedTimes.length === 0) {
       wx.showToast({ title: '请选择时段', icon: 'none' })
       return
     }
@@ -375,88 +372,96 @@ Page({
     }
 
     const selectedService = this.data.services.find(s => s.id === selectedServiceId)
-    const endHour = parseInt(selectedTime.split(':')[0]) + 1
-    const endTime = endHour.toString().padStart(2, '0') + ':00'
 
-    const bookingData = {
-      serviceName: selectedService.name,
-      servicePrice: selectedService.price,
-      serviceId: selectedServiceId,
-      bookingDate: selectedDate,
-      bookingTime: selectedTime,
-      bookingEndTime: endTime,
-      dateText: this.data.dateText,
-      name: name.trim(),
-      phone: phone.trim(),
-      userNickName: userInfo.nickName || '',
-      remark: remark.trim(),
-      status: 'confirmed',
-      createTime: new Date().toISOString()
-    }
+    // 为每个所选时段生成预约数据
+    const bookingList = selectedTimes.map(t => {
+      const endHour = parseInt(t.split(':')[0]) + 1
+      const endTime = endHour.toString().padStart(2, '0') + ':00'
+      return {
+        serviceName: selectedService.name,
+        servicePrice: selectedService.price,
+        serviceId: selectedServiceId,
+        bookingDate: selectedDate,
+        bookingTime: t,
+        bookingEndTime: endTime,
+        dateText: this.data.dateText,
+        name: name.trim(),
+        phone: phone.trim(),
+        userNickName: userInfo.nickName || '',
+        remark: remark.trim(),
+        status: 'confirmed',
+        createTime: new Date().toISOString()
+      }
+    })
 
     this.setData({ submitting: true })
 
-    // 尝试写入云数据库，失败则写本地
-    this.saveBooking(bookingData, selectedService)
+    // 逐个保存
+    this.saveBookings(bookingList, 0, selectedService)
   },
 
-  // 保存预约（云开发 + 本地兜底）
-  saveBooking(bookingData, selectedService) {
-    const saveToCloud = () => {
-      return new Promise((resolve, reject) => {
-        if (!wx.cloud) {
-          reject(new Error('云开发未初始化'))
-          return
+  // 批量保存预约
+  saveBookings(bookingList, index, selectedService) {
+    if (index >= bookingList.length) {
+      // 全部保存完成
+      const timesText = bookingList.map(b => b.bookingTime).join('、')
+      this.setData({
+        submitting: false,
+        showSuccess: true,
+        bookingResult: {
+          serviceName: selectedService.name,
+          servicePrice: selectedService.price,
+          date: this.data.dateText,
+          time: timesText,
+          name: bookingList[0].name,
+          phone: bookingList[0].phone
         }
-        const db = wx.cloud.database()
-        db.collection('bookings').add({
-          data: {
-            ...bookingData,
-            createTime: db.serverDate()
-          }
-        }).then(resolve).catch(reject)
       })
+      return
     }
 
-    // 先尝试云端，失败则存本地
+    const bookingData = bookingList[index]
+    const saveNext = () => this.saveBookings(bookingList, index + 1, selectedService)
+
+    const queryWithTimeout = (promise, ms = 10000) => {
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('写入超时')), ms)
+      )
+      return Promise.race([promise, timeout])
+    }
+
+    const saveToCloud = () => {
+      if (!wx.cloud) return Promise.reject(new Error('云开发未初始化'))
+      const db = wx.cloud.database()
+      return queryWithTimeout(
+        db.collection('bookings').add({
+          data: { ...bookingData, createTime: db.serverDate() }
+        })
+      )
+    }
+
     saveToCloud()
       .then(() => {
-        this.onSaveSuccess(bookingData, selectedService)
+        // 记录日志
+        const userInfo = wx.getStorageSync('userInfo') || {}
+        addLog('book', {
+          nickName: userInfo.nickName || bookingData.name,
+          serviceName: selectedService.name,
+          bookingDate: bookingData.bookingDate,
+          bookingTime: bookingData.bookingTime,
+          time: new Date().toLocaleString('zh-CN', { hour12: false })
+        })
+        saveNext()
       })
       .catch(() => {
-        // 云开发失败，存本地
+        // 云端失败，存本地
         try {
           const localData = wx.getStorageSync('bookings') || []
           localData.push(bookingData)
           wx.setStorageSync('bookings', localData)
         } catch (e) {}
-        this.onSaveSuccess(bookingData, selectedService)
+        saveNext()
       })
-  },
-
-  onSaveSuccess(bookingData, selectedService) {
-    // 记录操作日志
-    const userInfo = wx.getStorageSync('userInfo') || {}
-    addLog('book', {
-      nickName: userInfo.nickName || bookingData.name,
-      serviceName: selectedService.name,
-      bookingDate: bookingData.bookingDate,
-      bookingTime: bookingData.bookingTime,
-      time: bookingData.createTime ? new Date(bookingData.createTime).toLocaleString('zh-CN', { hour12: false }) : new Date().toLocaleString('zh-CN', { hour12: false })
-    })
-
-    this.setData({
-      submitting: false,
-      showSuccess: true,
-      bookingResult: {
-        serviceName: selectedService.name,
-        servicePrice: selectedService.price,
-        date: this.data.dateText,
-        time: bookingData.bookingTime,
-        name: bookingData.name,
-        phone: bookingData.phone
-      }
-    })
   },
 
   // 返回首页
@@ -469,12 +474,14 @@ Page({
     this.setData({
       showSuccess: false,
       selectedServiceId: 0,
-      selectedDate: '',
-      selectedTime: '',
-      dateText: '',
+      selectedDate: this.formatDate(new Date()),
+      selectedTimes: [],
+      dateText: '今天',
       name: '',
       phone: '',
       remark: ''
     })
+    this.generateTimeSlots()
+    this.checkTimeConflicts(this.formatDate(new Date()))
   }
 })

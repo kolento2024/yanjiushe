@@ -157,6 +157,14 @@ page {
   font-weight: 600;
   color: #3D3D3D;
   margin-bottom: 8rpx;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  word-break: break-all;
+  line-height: 1.4;
+  min-height: 86rpx;
 }
 
 .service-desc {

@@ -5,58 +5,6 @@ page {
   flex-direction: column;
 }
 
-/* ====== 日期筛选栏 ====== */
-.filter-bar {
-  flex-shrink: 0;
-  background: #FFFFFF;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #F5F0EB;
-}
-
-.filter-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.picker-wrapper {
-  flex-shrink: 0;
-}
-
-.picker-btn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 64rpx;
-  padding: 0 20rpx;
-  margin-left: 24rpx;
-  background: linear-gradient(135deg, #FDF0F0, #FDF8F5);
-  border: 1rpx solid #F5E6E6;
-  border-radius: 32rpx;
-}
-
-.picker-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
-}
-
-.picker-label {
-  font-size: 24rpx;
-  color: #D48B8B;
-  font-weight: 500;
-  max-width: 200rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.picker-arrow {
-  font-size: 18rpx;
-  color: #D48B8B;
-  margin-left: 8rpx;
-  opacity: 0.6;
-}
-
 /* ====== 滚动区域 ====== */
 
 .scrollarea {
@@ -366,27 +314,56 @@ page {
 }
 
 .time-item {
-  width: calc(33.33% - 12rpx);
-  height: 80rpx;
+  width: calc(50% - 8rpx);
+  min-height: 80rpx;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 12rpx 8rpx;
   background: #FDF8F5;
   border-radius: 12rpx;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.time-label {
   font-size: 26rpx;
   color: #666;
-  transition: all 0.3s;
+  line-height: 1.3;
+}
+
+.time-item:active:not(.disabled) {
+  transform: scale(0.95);
 }
 
 .time-item.selected {
   background: linear-gradient(135deg, #D48B8B, #C07474);
+}
+
+.time-item.selected .time-label {
   color: #FFF;
   font-weight: 600;
 }
 
 .time-item.disabled {
   background: #F0EBE6;
-  color: #CCC;
+  opacity: 0.6;
+}
+
+.time-item.disabled .time-label {
+  color: #BBB;
+  text-decoration: line-through;
+}
+
+.time-reason {
+  font-size: 20rpx;
+  color: #C07474;
+  background: rgba(212, 139, 139, 0.12);
+  padding: 2rpx 10rpx;
+  border-radius: 4rpx;
+  margin-top: 4rpx;
+  font-weight: 500;
 }
 
 /* ====== 输入框 ====== */

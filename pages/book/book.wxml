@@ -3,19 +3,6 @@
 
 <scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
 
-  <!-- 日期筛选栏 -->
-  <view class="filter-bar">
-    <view class="filter-row">
-      <picker class="picker-wrapper" mode="date" value="{{pickerDate}}" bindchange="onPickerDateChange">
-        <view class="picker-btn">
-          <text class="picker-icon">📅</text>
-          <text class="picker-label">{{pickerDateText || '选择日期'}}</text>
-          <text class="picker-arrow">▼</text>
-        </view>
-      </picker>
-    </view>
-  </view>
-
   <!-- 预约表单 -->
   <view class="book-form" wx:if="{{!showSuccess}}">
 
@@ -100,20 +87,20 @@
     <view class="form-section">
       <view class="form-section-title">
         <text class="title-icon">🕐</text>
-        <text>选择时段</text>
+        <text>选择时段（可多选）</text>
         <text class="time-range">（9:00 - 19:00）</text>
       </view>
       <view class="time-grid">
         <view
-          class="time-item {{item.disabled ? 'disabled' : ''}} {{selectedTime === item.value ? 'selected' : ''}}"
+          class="time-item {{item.disabled ? 'disabled' : ''}} {{item.selected ? 'selected' : ''}}"
           wx:for="{{timeSlots}}"
           wx:key="value"
           bindtap="selectTime"
           data-time="{{item.value}}"
           data-disabled="{{item.disabled}}"
         >
-          <text wx:if="{{!item.disabled}}">{{item.label}}</text>
-          <text wx:else>{{item.label}} ({{item.disabledReason}})</text>
+          <text class="time-label">{{item.label}}</text>
+          <text class="time-reason" wx:if="{{item.disabled && item.disabledReason}}">{{item.disabledReason}}</text>
         </view>
       </view>
     </view>
