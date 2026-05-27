@@ -50,6 +50,13 @@ Page({
   // 订阅通知（店长专属）
   subscribeNotify() {
     if (this.data.subscribing) return
+
+    // 检查云开发是否可用
+    if (!wx.cloud) {
+      wx.showToast({ title: '云开发未初始化', icon: 'none' })
+      return
+    }
+
     this.setData({ subscribing: true })
 
     // 从 notify.js 获取模板ID
@@ -89,9 +96,10 @@ Page({
       name: 'sendSubscribeMessage',
       data: { action: 'getOpenid' }
     }).then(res => {
+      console.log('[订阅] 云函数返回:', res)
       const openid = res.result && res.result.openid
       if (!openid) {
-        wx.showToast({ title: '获取openid失败', icon: 'none' })
+        wx.showToast({ title: '获取openid失败，请重试', icon: 'none' })
         this.setData({ subscribing: false })
         return
       }
@@ -107,12 +115,19 @@ Page({
       }).then(() => {
         this.setData({ subscribed: true, subscribing: false })
         wx.showToast({ title: '订阅成功', icon: 'success' })
-      }).catch(() => {
+      }).catch(err => {
+        console.error('[订阅] 数据库写入失败:', err)
         wx.showToast({ title: '保存失败，请重试', icon: 'none' })
         this.setData({ subscribing: false })
       })
-    }).catch(() => {
-      wx.showToast({ title: '获取openid失败', icon: 'none' })
+    }).catch(err => {
+      console.error('[订阅] 云函数调用失败:', err)
+      // 云函数未部署或调用出错
+      wx.showModal({
+        title: '获取openid失败',
+        content: '请确保云函数 sendSubscribeMessage 已部署。\n在微信开发者工具中右键 cloudbase/functions/sendSubscribeMessage 目录 → "上传并部署"',
+        showCancel: false
+      })
       this.setData({ subscribing: false })
     })
   },
