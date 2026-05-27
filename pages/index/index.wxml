@@ -1,0 +1,89 @@
+<!--pages/index/index.wxml-->
+<navigation-bar back="{{false}}" background="transparent" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="page-wrap">
+
+    <!-- 头部 Banner -->
+    <view class="hero-section">
+      <view class="hero-bg"></view>
+      <view class="hero-content">
+        <text class="hero-tag">Professional Makeup Studio</text>
+        <text class="hero-title">颜 究 社</text>
+        <text class="hero-subtitle">发现你的独特之美</text>
+        <text class="hero-desc">专业化妆造型 · 精致服务 · 让你的美更出众</text>
+      </view>
+      <view class="hero-wave">
+        <view class="wave-inner"></view>
+      </view>
+    </view>
+
+    <!-- 服务项目 -->
+    <view class="section service-section">
+      <view class="section-header">
+        <text class="section-title">服务项目</text>
+        <text class="section-line"></text>
+      </view>
+      <view class="service-grid">
+        <view
+          class="service-card"
+          wx:for="{{services}}"
+          wx:key="id"
+          bindtap="goBookWithService"
+          data-id="{{item.id}}"
+        >
+          <text class="service-icon">{{item.icon}}</text>
+          <text class="service-name">{{item.name}}</text>
+          <text class="service-desc">{{item.desc}}</text>
+          <view class="service-features">
+            <text class="feature-tag" wx:for="{{item.features}}" wx:for-item="f" wx:key="*this">{{f}}</text>
+          </view>
+          <view class="service-bottom">
+            <view class="service-price-wrap">
+              <text class="service-price-symbol">¥</text>
+              <text class="service-price">{{item.price}}</text>
+            </view>
+            <text class="service-time">{{item.time}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 好评 -->
+    <view class="section review-section">
+      <view class="section-header">
+        <text class="section-title">顾客好评</text>
+        <text class="section-line"></text>
+      </view>
+      <scroll-view class="review-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="review-card" wx:for="{{reviews}}" wx:key="name">
+          <view class="review-header">
+            <view class="review-avatar">{{item.name[0]}}</view>
+            <view class="review-user">
+              <text class="review-name">{{item.name}}</text>
+              <view class="review-stars">
+                <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this">★</text>
+              </view>
+            </view>
+          </view>
+          <text class="review-text">"{{item.text}}"</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 底部预约引导 -->
+    <view class="cta-section safe-bottom">
+      <view class="cta-card">
+        <text class="cta-title">预约你的专属妆容</text>
+        <text class="cta-desc">工作时间 9:00 - 21:00  ·  全年无休</text>
+        <view class="btn-primary cta-btn" bindtap="goBook">
+          <text>立即预约</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>
+
+<!-- 底部菜单 -->
+<tab-bar current="index"></tab-bar>

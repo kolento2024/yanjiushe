@@ -1,0 +1,8 @@
+<!--pages/message/message.wxml-->
+<navigation-bar title="消息" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<view class="empty-wrap">
+  <text class="empty-icon">💬</text>
+  <text class="empty-title">暂无消息</text>
+  <text class="empty-desc">消息通知会显示在这里</text>
+</view>

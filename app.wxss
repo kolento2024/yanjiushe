@@ -1,0 +1,62 @@
+/**app.wxss**/
+page {
+  --primary: #D48B8B;
+  --primary-light: #F5E6E6;
+  --primary-dark: #C07474;
+  --accent: #E8B4B8;
+  --gold: #C9A96E;
+  --bg: #FDF8F5;
+  --bg-card: #FFFFFF;
+  --text: #3D3D3D;
+  --text-light: #999999;
+  --text-secondary: #666666;
+  --border: #F0EBE6;
+  --shadow: 0 4rpx 24rpx rgba(212, 139, 139, 0.1);
+  --radius: 16rpx;
+  --radius-lg: 24rpx;
+
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 通用按钮 */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: linear-gradient(135deg, #D48B8B 0%, #C07474 100%);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(212, 139, 139, 0.3);
+  transition: all 0.3s;
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+/* 安全区底部 */
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
+}

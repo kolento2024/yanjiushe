@@ -1,0 +1,13 @@
+<view class="tab-bar safe-bottom">
+  <view
+    class="tab-item {{current === item.key ? 'active' : ''}}"
+    wx:for="{{tabs}}"
+    wx:key="key"
+    bindtap="switchTab"
+    data-key="{{item.key}}"
+  >
+    <text class="tab-icon">{{item.icon}}</text>
+    <text class="tab-label">{{item.label}}</text>
+    <view class="tab-dot" wx:if="{{current === item.key}}"></view>
+  </view>
+</view>

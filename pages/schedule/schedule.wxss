@@ -1,0 +1,319 @@
+/**pages/schedule/schedule.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #FDF8F5;
+  overflow: hidden;
+}
+
+/* ====== 筛选栏 ====== */
+.filter-bar {
+  flex-shrink: 0;
+  background: #FFFFFF;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F5F0EB;
+}
+
+.filter-scroll {
+  width: 100%;
+  height: 60rpx;
+}
+
+.filter-list {
+  display: flex;
+  flex-direction: row;
+  height: 60rpx;
+  padding: 0 24rpx;
+}
+
+.filter-tag {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60rpx;
+  padding: 0 28rpx;
+  margin-right: 12rpx;
+  border-radius: 30rpx;
+  background: #FDF8F5;
+  font-size: 26rpx;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.filter-tag.active {
+  background: linear-gradient(135deg, #D48B8B, #C07474);
+  color: #FFF;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(212, 139, 139, 0.25);
+}
+
+/* ====== 列表区域 ====== */
+.list-area {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.schedule-scroll {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.schedule-list {
+  padding: 24rpx 28rpx 0;
+}
+
+/* ====== 加载 ====== */
+.loading-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 4rpx solid #F0EBE6;
+  border-top-color: #D48B8B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ====== 空状态 ====== */
+.empty-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.empty-icon {
+  font-size: 96rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #3D3D3D;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.empty-btn {
+  width: 320rpx;
+}
+
+/* ====== 日期标题 ====== */
+.date-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 0 20rpx;
+}
+
+.date-header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.date-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #D48B8B;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.date-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3D3D3D;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-count {
+  font-size: 24rpx;
+  color: #999;
+  background: #FDF8F5;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  white-space: nowrap;
+}
+
+/* ====== 课程卡片 ====== */
+.course-card {
+  display: flex;
+  flex-direction: row;
+  background: #FFF;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.course-time-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 110rpx;
+  min-height: 130rpx;
+  background: linear-gradient(180deg, #FDF8F8 0%, #FDF8F5 100%);
+  padding: 24rpx 12rpx;
+  flex-shrink: 0;
+}
+
+.course-time {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #D48B8B;
+}
+
+.course-time-end {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.course-body {
+  flex: 1;
+  padding: 22rpx 22rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.course-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+  gap: 16rpx;
+}
+
+.course-tag {
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-price {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #D48B8B;
+  flex-shrink: 0;
+}
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.course-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: 24rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ====== 备注 ====== */
+.course-remark {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 10rpx;
+  padding-top: 10rpx;
+  border-top: 1rpx dashed #F0EBE6;
+}
+
+.remark-icon {
+  font-size: 22rpx;
+  margin-right: 8rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
+}
+
+.remark-text {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* 底部占位 */
+.schedule-bottom {
+  height: 24rpx;
+}
