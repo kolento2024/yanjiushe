@@ -10,7 +10,8 @@ Component({
     tabs: [
       { key: 'index', icon: '🏠', label: '首页' },
       { key: 'book', icon: '📅', label: '预约' },
-      { key: 'my', icon: '👤', label: '我的' }
+      { key: 'manager', icon: '🏪', label: '店长' },
+      { key: 'my', icon: '👩', label: '我的' }
     ]
   },
 
@@ -22,6 +23,7 @@ Component({
       const urlMap = {
         index: '/pages/index/index',
         book: '/pages/book/book',
+        manager: '/pages/manager/manager',
         my: '/pages/my/my'
       }
 

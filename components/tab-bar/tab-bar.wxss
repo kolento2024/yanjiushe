@@ -18,27 +18,45 @@
   flex: 1;
   height: 100%;
   position: relative;
-  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 4rpx;
+  background: #D48B8B;
+  border-radius: 0 0 3rpx 3rpx;
+  transition: width 0.25s;
+}
+
+.tab-item.active::before {
+  width: 48rpx;
 }
 
 .tab-icon {
-  font-size: 38rpx;
-  margin-bottom: 4rpx;
-  transition: transform 0.2s;
+  font-size: 42rpx;
+  margin-bottom: 2rpx;
+  transition: transform 0.25s;
 }
 
 .tab-item.active .tab-icon {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .tab-label {
   font-size: 22rpx;
   color: #999;
-  transition: color 0.3s;
+  font-weight: 400;
+  transition: color 0.25s, font-weight 0.25s;
 }
 
 .tab-item.active .tab-label {
   color: #D48B8B;
-  font-weight: 600;
+  font-weight: 700;
 }
 

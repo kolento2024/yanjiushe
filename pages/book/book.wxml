@@ -123,14 +123,14 @@
           />
         </view>
         <view class="input-item">
-          <text class="input-label">电话</text>
+          <text class="input-label">激活码</text>
           <input
             class="input-field"
             type="number"
-            placeholder="请输入手机号码"
+            placeholder="请输入手机4位尾号"
             value="{{phone}}"
             bindinput="onPhoneInput"
-            maxlength="11"
+            maxlength="4"
           />
         </view>
         <view class="input-item remark-item">

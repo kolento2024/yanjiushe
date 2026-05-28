@@ -2,11 +2,16 @@
   "pages": [
     "pages/index/index",
     "pages/book/book",
+    "pages/manager/manager",
     "pages/my/my",
     "pages/schedule/schedule",
     "pages/message/message",
     "pages/roster/roster",
-    "pages/log/log"
+    "pages/log/log",
+    "pages/booking-search/booking-search",
+    "pages/add-student/add-student",
+    "pages/student-list/student-list",
+    "pages/about/about"
   ],
   "window": {
     "navigationBarTextStyle": "black",

@@ -13,9 +13,8 @@ Page({
     // 菜单列表
     menus: [
       { key: 'schedule', icon: '📋', label: '课程表', desc: '查看我的预约' },
-      { key: 'roster', icon: '📅', label: '排班表', desc: '查看全部学员预约' },
-      { key: 'log', icon: '📝', label: '操作日志', desc: '预约与取消记录' },
-      { key: 'message', icon: '💬', label: '消息', desc: '查看消息通知' }
+      { key: 'message', icon: '💬', label: '消息', desc: '查看消息通知' },
+      { key: 'about', icon: '💄', label: '关于我们', desc: '了解颜究社' }
     ]
   },
 
@@ -40,7 +39,7 @@ Page({
       .doc('shop_owner')
       .get()
       .then(res => {
-        this.setData({ subscribed: !!res.data })
+        this.setData({ subscribed: !!(res.data && res.data.openid) })
       })
       .catch(() => {
         this.setData({ subscribed: false })
@@ -186,9 +185,8 @@ Page({
     const { key } = e.currentTarget.dataset
     const urlMap = {
       schedule: '/pages/schedule/schedule',
-      roster: '/pages/roster/roster',
-      log: '/pages/log/log',
-      message: '/pages/message/message'
+      message: '/pages/message/message',
+      about: '/pages/about/about'
     }
     wx.navigateTo({ url: urlMap[key] })
   }

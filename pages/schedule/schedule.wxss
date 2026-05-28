@@ -394,3 +394,10 @@ page {
   color: #D48B8B;
   background: #FDF8F8;
 }
+
+.cancel-btn.disabled {
+  border-color: #F0EBE6;
+  background: #FDF8F5;
+  color: #CCC;
+  pointer-events: none;
+}

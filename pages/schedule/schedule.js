@@ -124,11 +124,15 @@ Page({
     }
 
     const db = wx.cloud.database()
-    return db.collection('bookings')
-      .orderBy('bookingDate', 'asc')
+    let query = db.collection('bookings')
+    if (currentNickName) {
+      query = query.where({ userNickName: currentNickName })
+    }
+    query = query.orderBy('bookingDate', 'asc')
       .orderBy('bookingTime', 'asc')
-      .limit(100)
-      .get()
+      .limit(200)
+
+    return query.get()
       .then(res => {
         let bookings = res.data
           .filter(item => item.status !== 'cancelled')
@@ -136,10 +140,6 @@ Page({
             ...item,
             phoneMasked: this.maskPhone(item.phone || '')
           }))
-        // 只保留当前用户的预约（匹配 userNickName）
-        if (currentNickName) {
-          bookings = bookings.filter(item => item.userNickName === currentNickName)
-        }
         this.setData({
           allBookings: bookings,
           cloudReady: true,
@@ -222,7 +222,10 @@ Page({
       .map(date => ({
         date: date,
         dateLabel: this.formatDateLabel(date),
-        items: grouped[date]
+        items: grouped[date].map(item => ({
+          ...item,
+          canCancel: this.canCancelBooking(item.bookingDate)
+        }))
       }))
 
     this.setData({
@@ -239,6 +242,17 @@ Page({
     const day = d.getDate()
     const week = weekDays[d.getDay()]
     return month + '月' + day + '日 周' + week
+  },
+
+  // 判断预约是否还能取消（需在预约日前一天20:00之前）
+  canCancelBooking(bookingDate) {
+    if (!bookingDate) return false
+    const now = new Date()
+    const booking = new Date(bookingDate.replace(/-/g, '/'))
+    // 截止时间：预约日期前一天的 20:00
+    const cutoff = new Date(booking.getTime() - 86400000)
+    cutoff.setHours(20, 0, 0, 0)
+    return now < cutoff
   },
 
   // 服务颜色映射
@@ -264,6 +278,20 @@ Page({
     const { id } = e.currentTarget.dataset
     const booking = this.findBookingById(id)
     if (!booking) return
+
+    // 检查是否超过取消时限
+    if (!this.canCancelBooking(booking.bookingDate)) {
+      const dayBefore = this.formatDateLabel(new Date(
+        new Date(booking.bookingDate.replace(/-/g, '/')).getTime() - 86400000
+      ))
+      wx.showModal({
+        title: '无法取消',
+        content: '取消预约需在' + dayBefore + ' 20:00前操作，已超时无法取消',
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
 
     wx.showModal({
       title: '取消预约',
@@ -343,9 +371,75 @@ Page({
       cancelBy: userInfo.nickName || '客户'
     })
 
+    // 恢复学员预约状态
+    this.resetStudentStatus(booking)
+
     // 刷新列表
     this.fetchBookings()
     wx.showToast({ title: '已取消', icon: 'success' })
+  },
+
+  // 取消预约后恢复学员状态为可预约
+  resetStudentStatus(booking) {
+    // 优先用 studentId，兜底用 name + serviceId
+    const findCondition = booking.studentId
+      ? { _id: booking.studentId }
+      : { name: booking.name, serviceId: booking.serviceId }
+
+    const updateStudent = (student) => {
+      // 1. 先本地更新（保证生效）
+      try {
+        const localStudents = wx.getStorageSync('students') || []
+        const idx = localStudents.findIndex(s =>
+          (student._id && s._id === student._id) ||
+          (s.name === (booking.name || student.name) && s.serviceId === (booking.serviceId || student.serviceId))
+        )
+        if (idx >= 0) {
+          localStudents[idx].bookingStatus = 'available'
+          wx.setStorageSync('students', localStudents)
+          console.log('[学员状态] 本地已恢复为 available')
+        }
+      } catch (e) {}
+
+      // 2. 再云更新
+      if (wx.cloud && student._id) {
+        const db = wx.cloud.database()
+        db.collection('students').doc(student._id).update({
+          data: { bookingStatus: 'available' }
+        }).catch(err => {
+          console.error('[学员状态] 云端恢复失败:', err)
+        })
+      }
+    }
+
+    const queryCloud = () => {
+      if (!wx.cloud) return Promise.reject(new Error('云开发未初始化'))
+      const db = wx.cloud.database()
+      return db.collection('students')
+        .where(findCondition)
+        .get()
+        .then(res => res.data)
+    }
+
+    queryCloud()
+      .then(students => {
+        if (students.length > 0) {
+          updateStudent(students[0])
+        }
+      })
+      .catch(() => {
+        // 本地降级
+        try {
+          const local = wx.getStorageSync('students') || []
+          const matched = local.filter(s => {
+            if (booking.studentId) return s._id === booking.studentId
+            return s.name === booking.name && s.serviceId === booking.serviceId
+          })
+          if (matched.length > 0) {
+            updateStudent(matched[0])
+          }
+        } catch (e) {}
+      })
   },
 
   onPullDownRefresh() {

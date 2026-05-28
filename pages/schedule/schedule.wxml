@@ -89,8 +89,8 @@
           </view>
           <view class="course-action">
             <view class="course-price">¥{{booking.servicePrice}}</view>
-            <view class="cancel-btn" bindtap="cancelBooking" data-id="{{booking._id}}">
-              <text>取消</text>
+            <view class="cancel-btn {{booking.canCancel ? '' : 'disabled'}}" bindtap="cancelBooking" data-id="{{booking._id}}">
+              <text>{{booking.canCancel ? '取消' : '已截止'}}</text>
             </view>
           </view>
         </view>

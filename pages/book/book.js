@@ -180,12 +180,12 @@ Page({
     return y + '-' + m + '-' + day
   },
 
-  // 生成时段 9:00-18:00（最晚 18:00-19:00）
+  // 生成时段 9:00-11:00, 11:00-13:00, ..., 17:00-19:00（每段2小时）
   generateTimeSlots() {
     const slots = []
-    for (let h = 9; h < 19; h++) {
+    for (let h = 9; h < 19; h += 2) {
       const start = h.toString().padStart(2, '0') + ':00'
-      const end = (h + 1).toString().padStart(2, '0') + ':00'
+      const end = (h + 2).toString().padStart(2, '0') + ':00'
       slots.push({
         value: start,
         label: start + ' - ' + end,
@@ -256,9 +256,13 @@ Page({
         return Promise.reject(new Error('云开发未初始化'))
       }
       const db = wx.cloud.database()
+      // 排除已取消的预约，避免取消后时段仍显示"已约"
       return queryWithTimeout(
         db.collection('bookings')
-          .where({ bookingDate: date })
+          .where({
+            bookingDate: date,
+            status: db.command.neq('cancelled')
+          })
           .get()
           .then(res => res.data)
       )
@@ -269,16 +273,26 @@ Page({
         this.markDisabledSlots(bookedList, date)
       })
       .catch(() => {
-        // 云端失败，兜底本地
+        // 云端失败，兜底本地（同样过滤掉已取消的）
         const local = wx.getStorageSync('bookings') || []
-        const bookedList = local.filter(b => b.bookingDate === date)
+        const bookedList = local.filter(b => b.bookingDate === date && b.status !== 'cancelled')
         this.markDisabledSlots(bookedList, date)
       })
   },
 
-  // 标记已占用的时段，同时禁用今天已过去的时间
+  // 标记已占用的时段（2小时段），同时禁用今天已过去的时间
   markDisabledSlots(bookedList, date) {
-    const bookedTimes = bookedList.map(b => b.bookingTime)
+    // 收集所有已被预约的小时值
+    const bookedHours = new Set()
+    bookedList.forEach(b => {
+      const bookingHour = parseInt(b.bookingTime.split(':')[0])
+      // 旧1小时预约占用该小时，新2小时预约占用2个连续小时
+      const endHour = b.bookingEndTime ? parseInt(b.bookingEndTime.split(':')[0]) : bookingHour + 1
+      for (let i = bookingHour; i < endHour; i++) {
+        bookedHours.add(i)
+      }
+    })
+
     const now = new Date()
     const todayStr = this.formatDate(now)
     const currentHour = now.getHours()
@@ -286,14 +300,19 @@ Page({
     const slots = this.data.timeSlots.map(s => {
       let disabled = false
       let disabledReason = ''
-      // 已被他人预约
-      if (bookedTimes.includes(s.value)) {
-        disabled = true
-        disabledReason = '已约'
+      const slotHour = parseInt(s.value.split(':')[0])
+
+      // 检查2小时段内是否有冲突
+      for (let i = slotHour; i < slotHour + 2; i++) {
+        if (bookedHours.has(i)) {
+          disabled = true
+          disabledReason = '已约'
+          break
+        }
       }
-      // 如果是今天且时段已过当前小时
+
+      // 如果是今天且时段起始小时已过去
       if (!disabled && date === todayStr) {
-        const slotHour = parseInt(s.value.split(':')[0])
         if (slotHour <= currentHour) {
           disabled = true
           disabledReason = '已过时'
@@ -307,9 +326,9 @@ Page({
   // 选择服务
   selectService(e) {
     const { id } = e.currentTarget.dataset
-    this.setData({
-      selectedServiceId: this.data.selectedServiceId === id ? 0 : id
-    })
+    const newId = this.data.selectedServiceId === id ? 0 : id
+    if (newId === this.data.selectedServiceId) return
+    this.setData({ selectedServiceId: newId })
   },
 
   // 输入姓名
@@ -329,7 +348,7 @@ Page({
 
   // 提交预约
   submitBooking() {
-    const { selectedServiceId, selectedDate, selectedTimes, name, phone, remark } = this.data
+    const { selectedServiceId, selectedDate, selectedTimes, name, phone } = this.data
 
     // 获取当前登录用户昵称
     const userInfo = wx.getStorageSync('userInfo') || {}
@@ -364,30 +383,216 @@ Page({
       return
     }
     if (!phone.trim()) {
-      wx.showToast({ title: '请输入电话', icon: 'none' })
+      wx.showToast({ title: '请输入激活码', icon: 'none' })
       return
     }
-    if (!/^1[3-9]\d{9}$/.test(phone.trim())) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' })
+    if (!/^\d{4}$/.test(phone.trim())) {
+      wx.showToast({ title: '请输入正确的4位尾号', icon: 'none' })
       return
     }
 
     const selectedService = this.data.services.find(s => s.id === selectedServiceId)
+    const trimmedName = name.trim()
+    const trimmedPhone = phone.trim()
+
+    // 查询 students 表校验学员资格
+    this.validateStudent(trimmedName, trimmedPhone, selectedService, (matchedStudent) => {
+      this.doSubmitBooking(selectedService, matchedStudent)
+    })
+  },
+
+  // 校验学员：姓名匹配 + 手机尾号匹配、已缴费、可预约
+  validateStudent(name, code, selectedService, onSuccess) {
+    wx.showLoading({ title: '验证中...', mask: true })
+
+    const queryStudent = () => {
+      if (!wx.cloud) return Promise.reject(new Error('云开发未初始化'))
+      const db = wx.cloud.database()
+      return db.collection('students')
+        .where({ name: name })
+        .get()
+        .then(res => (Array.isArray(res.data) ? res.data : []))
+    }
+
+    queryStudent()
+      .then(students => {
+        wx.hideLoading()
+
+        if (students.length === 0) {
+          wx.showModal({
+            title: '预约失败',
+            content: '未找到您的学员信息，请先与客服沟通，缴费登记后方可预约',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 合并本地 storage 的最新状态（云端更新可能因权限失败，本地更实时）
+        let localStudents = []
+        try {
+          localStudents = wx.getStorageSync('students') || []
+        } catch (e) {}
+        const localMap = {}
+        localStudents.forEach(s => {
+          if (s._id) localMap[s._id] = s
+        })
+        // 用本地状态覆盖云数据
+        students = students.map(s => {
+          const local = s._id ? localMap[s._id] : null
+          if (local && local.bookingStatus) {
+            s.bookingStatus = local.bookingStatus
+          }
+          return s
+        })
+
+        // 按手机尾号匹配
+        const tailMatched = students.filter(s => s.phone && s.phone.endsWith(code))
+        if (tailMatched.length === 0) {
+          wx.showModal({
+            title: '预约失败',
+            content: '激活码验证不通过，请确认手机尾号后重试',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 检查是否有匹配服务项目的记录
+        const matchedStudent = tailMatched.find(s => s.serviceId === selectedService.id)
+
+        if (!matchedStudent) {
+          wx.showModal({
+            title: '预约失败',
+            content: '您选择的套餐与已购套餐不符，请确认后重试，或联系客服处理',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 校验缴费状态
+        if (matchedStudent.paymentStatus !== 'paid') {
+          wx.showModal({
+            title: '预约失败',
+            content: '您尚未缴纳定金，请先缴费后再预约',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 校验预约状态
+        if (matchedStudent.bookingStatus !== 'available') {
+          const statusMap = {
+            'unavailable': '当前暂不可预约',
+            'booked': '您已预约过，无法重复预约'
+          }
+          const msg = statusMap[matchedStudent.bookingStatus] || '该学员暂不可预约'
+          wx.showModal({
+            title: '预约失败',
+            content: msg + '，如有疑问请与客服沟通',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 校验通过，将匹配的学员信息传给后续流程
+        onSuccess(matchedStudent)
+      })
+      .catch(err => {
+        wx.hideLoading()
+        console.error('学员校验失败:', err)
+
+        // 云开发未初始化——直接给出明确提示
+        if (err && err.message === '云开发未初始化') {
+          wx.showModal({
+            title: '提示',
+            content: '云开发环境未初始化，请在 app.js 中配置正确的环境 ID，或联系客服预约',
+            showCancel: false,
+            confirmText: '知道了'
+          })
+          return
+        }
+
+        // 云查询失败，降级到本地缓存
+        this.localFallbackCheck(name, code, selectedService, onSuccess)
+      })
+  },
+
+  // 本地降级：当云数据库不可用时，用本地 storage 的 students 缓存校验
+  localFallbackCheck(name, code, selectedService, onSuccess) {
+    try {
+      const localStudents = wx.getStorageSync('students') || []
+      const matched = localStudents.filter(
+        s => s.name === name && s.phone && s.phone.endsWith(code)
+      )
+      if (matched.length === 0) {
+        wx.showModal({
+          title: '提示',
+          content: '网络异常，无法验证学员信息，请稍后重试',
+          showCancel: false,
+          confirmText: '知道了'
+        })
+        return
+      }
+      const matchService = matched.find(s => s.serviceId === selectedService.id)
+      if (!matchService) {
+        wx.showModal({
+          title: '预约失败',
+          content: '您选择的套餐与已购套餐不符',
+          showCancel: false,
+          confirmText: '知道了'
+        })
+        return
+      }
+      if (matchService.paymentStatus !== 'paid') {
+        wx.showModal({
+          title: '预约失败',
+          content: '您尚未缴纳定金，请先缴费后再预约',
+          showCancel: false,
+          confirmText: '知道了'
+        })
+        return
+      }
+      if (matchService.bookingStatus !== 'available') {
+        wx.showModal({
+          title: '预约失败',
+          content: '该学员暂不可预约，请与客服沟通',
+          showCancel: false,
+          confirmText: '知道了'
+        })
+        return
+      }
+      onSuccess(matchService)
+    } catch (e) {
+      wx.showToast({ title: '验证失败，请重试', icon: 'none' })
+    }
+  },
+
+  // 执行实际预约提交
+  doSubmitBooking(selectedService, matchedStudent) {
+    const { selectedDate, selectedTimes, name, phone, remark } = this.data
+    const userInfo = wx.getStorageSync('userInfo') || {}
+    const studentPhone = matchedStudent.phone || ''
 
     // 为每个所选时段生成预约数据
     const bookingList = selectedTimes.map(t => {
-      const endHour = parseInt(t.split(':')[0]) + 1
-      const endTime = endHour.toString().padStart(2, '0') + ':00'
+      const startHour = parseInt(t.split(':')[0])
+      const endTime = (startHour + 2).toString().padStart(2, '0') + ':00'
       return {
         serviceName: selectedService.name,
         servicePrice: selectedService.price,
-        serviceId: selectedServiceId,
+        serviceId: selectedService.id,
         bookingDate: selectedDate,
         bookingTime: t,
         bookingEndTime: endTime,
         dateText: this.data.dateText,
         name: name.trim(),
         phone: phone.trim(),
+        studentPhone: studentPhone,
+        studentId: matchedStudent._id || '',
         userNickName: userInfo.nickName || '',
         remark: remark.trim(),
         status: 'confirmed',
@@ -398,14 +603,15 @@ Page({
     this.setData({ submitting: true })
 
     // 逐个保存
-    this.saveBookings(bookingList, 0, selectedService)
+    this.saveBookings(bookingList, 0, selectedService, matchedStudent)
   },
 
   // 批量保存预约
-  saveBookings(bookingList, index, selectedService) {
+  saveBookings(bookingList, index, selectedService, matchedStudent) {
     if (index >= bookingList.length) {
-      // 全部保存完成 → 通知店长
+      // 全部保存完成 → 通知店长 + 更新学员状态
       notifyShopOwner('new_booking', bookingList[0])
+      this.updateStudentBookingStatus(matchedStudent, 'booked')
 
       const timesText = bookingList.map(b => b.bookingTime).join('、')
       this.setData({
@@ -424,7 +630,7 @@ Page({
     }
 
     const bookingData = bookingList[index]
-    const saveNext = () => this.saveBookings(bookingList, index + 1, selectedService)
+    const saveNext = () => this.saveBookings(bookingList, index + 1, selectedService, matchedStudent)
 
     const queryWithTimeout = (promise, ms = 10000) => {
       const timeout = new Promise((_, reject) =>
@@ -463,8 +669,60 @@ Page({
           localData.push(bookingData)
           wx.setStorageSync('bookings', localData)
         } catch (e) {}
+
+        // 本地降级也要记录日志
+        const userInfo = wx.getStorageSync('userInfo') || {}
+        addLog('book', {
+          nickName: userInfo.nickName || bookingData.name,
+          serviceName: selectedService.name,
+          bookingDate: bookingData.bookingDate,
+          bookingTime: bookingData.bookingTime,
+          time: new Date().toLocaleString('zh-CN', { hour12: false })
+        })
+
         saveNext()
       })
+  },
+
+  // 更新学员预约状态（先本地保证生效，再云更新尽力而为）
+  updateStudentBookingStatus(matchedStudent, status) {
+    if (!matchedStudent) return
+
+    // 1. 先同步更新本地 storage（保证下次验证能读到）
+    try {
+      const localStudents = wx.getStorageSync('students') || []
+      let updated = false
+      for (let i = 0; i < localStudents.length; i++) {
+        if (
+          (matchedStudent._id && localStudents[i]._id === matchedStudent._id) ||
+          (localStudents[i].name === matchedStudent.name && localStudents[i].serviceId === matchedStudent.serviceId)
+        ) {
+          localStudents[i].bookingStatus = status
+          updated = true
+          break
+        }
+      }
+      // 如果本地没找到，追加进去
+      if (!updated && matchedStudent._id) {
+        matchedStudent.bookingStatus = status
+        localStudents.push(matchedStudent)
+      }
+      wx.setStorageSync('students', localStudents)
+      console.log('[学员状态] 本地已更新为', status)
+    } catch (e) {
+      console.error('[学员状态] 本地更新失败:', e)
+    }
+
+    // 2. 再尝试云数据库更新
+    if (!wx.cloud || !matchedStudent._id) return
+    const db = wx.cloud.database()
+    db.collection('students').doc(matchedStudent._id).update({
+      data: { bookingStatus: status }
+    }).then(() => {
+      console.log('[学员状态] 云端已更新为', status)
+    }).catch(err => {
+      console.error('[学员状态] 云端更新失败(可能因权限不足):', err)
+    })
   },
 
   // 返回首页

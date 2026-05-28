@@ -110,13 +110,14 @@ page {
 .service-option {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
   padding: 0;
   border: 2rpx solid #F5F0EB;
   border-radius: 16rpx;
   margin-bottom: 16rpx;
   overflow: hidden;
-  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.25s, background 0.25s;
 }
 
 .service-option:last-child {
@@ -129,10 +130,12 @@ page {
 }
 
 .service-option-img {
-  width: 140rpx;
-  height: 140rpx;
+  width: 150rpx;
+  height: 150rpx;
   flex-shrink: 0;
   display: block;
+  border-radius: 12rpx;
+  margin-left: 16rpx;
 }
 
 .service-option-body {
@@ -141,7 +144,7 @@ page {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 20rpx 20rpx 20rpx;
+  padding: 20rpx 20rpx 20rpx 16rpx;
   min-width: 0;
   overflow: hidden;
 }
@@ -167,7 +170,7 @@ page {
   font-weight: 700;
   color: #D48B8B;
   flex-shrink: 0;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .service-option-name {
@@ -213,9 +216,8 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-shrink: 0;
-  padding: 32rpx 0;
   margin-left: 16rpx;
 }
 
@@ -278,7 +280,8 @@ page {
   margin-right: 16rpx;
   border-radius: 16rpx;
   background: #FDF8F5;
-  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.25s;
 }
 
 .date-item.selected {
@@ -323,8 +326,9 @@ page {
   padding: 12rpx 8rpx;
   background: #FDF8F5;
   border-radius: 12rpx;
-  transition: all 0.3s;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .time-label {
@@ -334,7 +338,7 @@ page {
 }
 
 .time-item:active:not(.disabled) {
-  transform: scale(0.95);
+  background: #F5E8E8;
 }
 
 .time-item.selected {
