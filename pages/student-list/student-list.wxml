@@ -1,0 +1,97 @@
+<!--pages/student-list/student-list.wxml-->
+<navigation-bar title="学员列表" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <!-- 搜索面板 -->
+  <view class="search-panel">
+    <!-- 姓名搜索 -->
+    <view class="search-bar">
+      <view class="search-input-wrap">
+        <text class="search-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="请输入学员姓名"
+          value="{{searchName}}"
+          bindinput="onNameInput"
+          confirm-type="search"
+          bindconfirm="onSearch"
+        />
+        <view class="clear-name" wx:if="{{searchName}}" bindtap="clearName">
+          <text>✕</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日期筛选 -->
+    <view class="filter-row">
+      <text class="filter-label">日期筛选</text>
+      <picker mode="date" value="{{searchDate}}" bindchange="onDateChange">
+        <view class="date-btn">
+          <text class="date-icon">📅</text>
+          <text class="date-text">{{searchDateText}}</text>
+          <text class="date-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="clear-date" wx:if="{{searchDate}}" bindtap="clearDate">
+        <text>清除</text>
+      </view>
+    </view>
+
+    <!-- 查询按钮 -->
+    <view class="search-btn" bindtap="onSearch">
+      <text>查询</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="empty-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="empty-title">加载中...</text>
+  </view>
+
+  <!-- 空提示（未搜索时） -->
+  <view class="empty-wrap" wx:elif="{{!searched}}">
+    <view class="empty-icon-wrap">
+      <text class="empty-icon">🎓</text>
+    </view>
+    <text class="empty-title">学员列表</text>
+    <text class="empty-desc">输入姓名或选择日期进行查询，不填则查询全部</text>
+  </view>
+
+  <!-- 空结果 -->
+  <view class="empty-wrap" wx:elif="{{results.length === 0}}">
+    <view class="empty-icon-wrap">
+      <text class="empty-icon">📭</text>
+    </view>
+    <text class="empty-title">未找到匹配学员</text>
+    <text class="empty-desc">请尝试调整搜索条件</text>
+  </view>
+
+  <!-- 结果列表 -->
+  <view class="result-list" wx:else>
+    <view class="result-count">共找到 {{results.length}} 条记录</view>
+    <view class="student-card" wx:for="{{results}}" wx:key="_id">
+      <view class="student-top">
+        <view class="student-name">{{item.name || '未填写'}}</view>
+        <view class="student-phone">📞 {{item.phone || '未填写'}}</view>
+      </view>
+      <view class="student-mid">
+        <view class="student-service" wx:if="{{item.serviceName}}">
+          <text class="service-tag">💄 {{item.serviceName}}</text>
+        </view>
+        <view class="student-status">
+          <text class="status-tag {{item.paymentStatus === 'paid' ? 'status-paid' : 'status-unpaid'}}">
+            {{item.paymentStatus === 'paid' ? '已缴费' : '未缴费'}}
+          </text>
+        </view>
+      </view>
+      <view class="student-bottom" wx:if="{{item.createdAt}}">
+        <text class="student-time">🕐 录入时间：{{item.createdAt}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+</scroll-view>

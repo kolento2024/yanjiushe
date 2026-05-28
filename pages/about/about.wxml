@@ -1,0 +1,68 @@
+<!--pages/about/about.wxml-->
+<navigation-bar title="关于我们" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <view class="about-wrap">
+    <!-- Logo & 品牌 -->
+    <view class="brand-card">
+      <view class="brand-icon-wrap">
+        <text class="brand-icon">💄</text>
+      </view>
+      <text class="brand-name">颜究社美妆工作室</text>
+      <text class="brand-slogan">发现你的每一面美</text>
+    </view>
+
+    <!-- 介绍 -->
+    <view class="intro-card">
+      <view class="card-title">
+        <view class="title-dot"></view>
+        <text>品牌故事</text>
+      </view>
+      <text class="intro-text">
+        颜究社，一个专注于面部美学的造梦空间。我们相信，化妆不是遮掩，而是放大——放大你五官中本就存在的光芒。
+      </text>
+      <text class="intro-text">
+        从日常通勤的伪素颜到聚光灯下的舞台妆，从韩系水光到复古烟熏，我们的化妆师擅于倾听你的气质与场合，用刷具替代语言，为你勾勒恰如其分的表达。不必追逐潮流，你就是风格本身。
+      </text>
+      <text class="intro-text">
+        每一笔，都是对「你本来就很美」的诚实回应。
+      </text>
+    </view>
+
+    <!-- 地址 -->
+    <view class="info-card">
+      <view class="card-title">
+        <view class="title-dot"></view>
+        <text>门店地址</text>
+      </view>
+      <view class="info-row">
+        <text class="info-icon">📍</text>
+        <text class="info-text">上海市松江区万达广场</text>
+      </view>
+    </view>
+
+    <!-- 微信 -->
+    <view class="info-card">
+      <view class="card-title">
+        <view class="title-dot"></view>
+        <text>联系方式</text>
+      </view>
+      <view class="info-row">
+        <text class="info-icon">💬</text>
+        <view class="info-right">
+          <text class="info-text">微信号：Rosy20201</text>
+          <text class="info-tip">长按复制，添加好友预约咨询</text>
+        </view>
+      </view>
+      <view class="copy-btn" bindtap="copyWechat">
+        <text>复制微信号</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+</scroll-view>
+
+<tab-bar current="my"></tab-bar>

@@ -1,0 +1,85 @@
+<!--pages/manager/manager.wxml-->
+<navigation-bar title="店长" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <!-- 顶部标题区 -->
+  <view class="page-header">
+    <view class="header-row">
+      <view class="header-icon-wrap">
+        <text class="header-icon">🏪</text>
+      </view>
+      <view class="header-text">
+        <text class="header-title">店长管理</text>
+        <text class="header-subtitle">门店经营数据一览</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预约信息 - 数据概览卡片 -->
+  <view class="section-block">
+    <view class="section-header">
+      <text class="section-title">📊 预约信息</text>
+      <text class="section-more" bindtap="goBookingSearch">查看全部 ›</text>
+    </view>
+
+    <!-- 数据概览网格 -->
+    <view class="stats-grid">
+      <view class="stat-card stat-today">
+        <text class="stat-num">{{bookingStats.today}}</text>
+        <text class="stat-label">今日预约</text>
+        <view class="stat-bar" style="background: linear-gradient(90deg, #D48B8B, #F0C0C0)"></view>
+      </view>
+      <view class="stat-card stat-tomorrow">
+        <text class="stat-num">{{bookingStats.tomorrow}}</text>
+        <text class="stat-label">明日预约</text>
+        <view class="stat-bar" style="background: linear-gradient(90deg, #C9A96E, #E0D0B0)"></view>
+      </view>
+      <view class="stat-card stat-week">
+        <text class="stat-num">{{bookingStats.thisWeek}}</text>
+        <text class="stat-label">本周预约</text>
+        <view class="stat-bar" style="background: linear-gradient(90deg, #A78BFA, #D0C0F0)"></view>
+      </view>
+      <view class="stat-card stat-total">
+        <text class="stat-num">{{bookingStats.totalActive}}</text>
+        <text class="stat-label">待排预约</text>
+        <view class="stat-bar" style="background: linear-gradient(90deg, #6BBFA0, #B0E0D0)"></view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 管理功能模块 -->
+  <view class="section-block">
+    <view class="section-header">
+      <text class="section-title">🔧 管理功能</text>
+    </view>
+
+    <view class="module-card"
+      wx:for="{{modules}}"
+      wx:key="key"
+      bindtap="onModuleTap"
+      data-key="{{item.key}}"
+    >
+      <view class="module-left">
+        <view class="module-icon-wrap" style="background: linear-gradient(135deg, {{item.bgStart}}, {{item.bgEnd}})">
+          <text class="module-icon">{{item.icon}}</text>
+        </view>
+        <view class="module-text">
+          <text class="module-title">{{item.title}}</text>
+          <text class="module-desc">{{item.desc}}</text>
+        </view>
+      </view>
+      <view class="module-right">
+        <text class="module-arrow">›</text>
+      </view>
+      <view class="module-accent" style="background: {{item.accent}}"></view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+</scroll-view>
+
+<!-- 底部菜单 -->
+<tab-bar current="manager"></tab-bar>

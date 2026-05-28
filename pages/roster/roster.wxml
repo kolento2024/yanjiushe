@@ -1,0 +1,98 @@
+<!--pages/roster/roster.wxml-->
+<navigation-bar title="排班表" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<view class="filter-bar">
+  <view class="filter-row">
+    <!-- 日期选择器 -->
+    <picker class="picker-wrapper" mode="date" value="{{pickerDate}}" bindchange="onPickerDateChange">
+      <view class="picker-btn">
+        <text class="picker-icon">📅</text>
+        <text class="picker-label">{{pickerDateText || '选择日期'}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+    <!-- 快捷筛选 -->
+    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-list">
+        <view
+          class="filter-tag {{filterDate === item.date ? 'active' : ''}}"
+          wx:for="{{dateFilters}}"
+          wx:key="date"
+          bindtap="filterByDate"
+          data-date="{{item.date}}"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<view class="list-area">
+
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view class="empty-wrap" wx:elif="{{isEmpty}}">
+    <text class="empty-icon">📅</text>
+    <text class="empty-title">暂无排班记录</text>
+    <text class="empty-desc">学员预约后，排班信息会显示在这里</text>
+    <view class="btn-primary empty-btn" bindtap="goBook">
+      <text>去预约</text>
+    </view>
+  </view>
+
+  <scroll-view class="schedule-scroll" scroll-y enhanced show-scrollbar="{{false}}" wx:else>
+    <view class="schedule-list">
+      <block wx:for="{{displayBookings}}" wx:key="date">
+        <view class="date-header">
+          <view class="date-header-left">
+            <view class="date-dot"></view>
+            <text class="date-title">{{item.dateLabel}}</text>
+          </view>
+          <text class="date-count">共{{item.items.length}}节课</text>
+        </view>
+
+        <view class="course-card" wx:for="{{item.items}}" wx:for-item="booking" wx:key="_id">
+          <view class="course-time-side">
+            <text class="course-time">{{booking.bookingTime}}</text>
+            <text class="course-time-end">{{booking.bookingEndTime || ''}}</text>
+          </view>
+          <view class="course-body">
+            <view class="course-header">
+              <view class="course-tag" style="background: {{booking.serviceColor || '#D48B8B'}}20; color: {{booking.serviceColor || '#D48B8B'}}">
+                {{booking.serviceName}}
+              </view>
+              
+            </view>
+            <view class="course-info">
+              <view class="course-info-item">
+                <text class="info-icon">👤</text>
+                <text class="info-text">{{booking.name}}</text>
+              </view>
+              <view class="course-info-item" wx:if="{{booking.userNickName}}">
+                <text class="info-icon">🏷️</text>
+                <text class="info-text">{{booking.userNickName}}</text>
+              </view>
+              <view class="course-info-item">
+                <text class="info-icon">📞</text>
+                <text class="info-text">{{booking.displayPhone}}</text>
+              </view>
+              <view class="course-remark" wx:if="{{booking.remark}}">
+                <text class="remark-icon">📝</text>
+                <text class="remark-text">{{booking.remark}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="course-action">
+            <text class="course-price">¥{{booking.servicePrice}}</text>
+            <view class="cancel-btn" bindtap="cancelBooking" data-id="{{booking._id}}">
+              <text>取消</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+    <view class="schedule-bottom"></view>
+  </scroll-view>
+</view>

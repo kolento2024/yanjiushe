@@ -1,0 +1,95 @@
+<!--pages/booking-search/booking-search.wxml-->
+<navigation-bar title="预约信息查询" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <!-- 搜索栏 -->
+  <view class="search-panel">
+    <view class="search-row">
+      <view class="search-input-wrap">
+        <text class="search-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="输入学员姓名搜索"
+          value="{{searchName}}"
+          bindinput="onNameInput"
+          confirm-type="search"
+          bindconfirm="onSearch"
+        />
+        <view class="clear-icon" wx:if="{{searchName}}" bindtap="clearName">
+          <text>✕</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="search-row date-row">
+      <view class="date-label">日期筛选</view>
+      <picker mode="date" value="{{searchDate}}" bindchange="onDateChange">
+        <view class="date-picker-btn">
+          <text class="date-picker-icon">📅</text>
+          <text class="date-picker-text">{{searchDateText}}</text>
+          <text class="date-picker-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="date-clear" wx:if="{{searchDate}}" bindtap="clearDate">
+        <text>清除</text>
+      </view>
+    </view>
+
+    <view class="search-btn" bindtap="onSearch">
+      <text>查询</text>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="result-area" wx:if="{{searched}}">
+
+    <!-- 空结果 -->
+    <view class="empty-wrap" wx:if="{{results.length === 0}}">
+      <view class="empty-icon-wrap">
+        <text class="empty-icon">📭</text>
+      </view>
+      <text class="empty-title">未找到匹配记录</text>
+      <text class="empty-desc">试试修改查询条件</text>
+    </view>
+
+    <!-- 结果列表 -->
+    <view class="result-list" wx:else>
+      <view class="result-count">
+        <text>共找到 <text class="count-num">{{results.length}}</text> 条记录</text>
+      </view>
+
+      <view class="result-card" wx:for="{{results}}" wx:key="_id">
+        <view class="card-top">
+          <view class="card-tag" style="background: {{item.serviceColor}}20; color: {{item.serviceColor}}">
+            {{item.serviceName}}
+          </view>
+          <view class="card-status" wx:if="{{item.status === 'cancelled'}}">
+            <text class="cancelled-tag">已取消</text>
+          </view>
+        </view>
+
+        <view class="card-body">
+          <view class="card-row card-row-main">
+            <text class="card-name">{{item.name}}</text>
+            <text class="card-price">¥{{item.servicePrice}}</text>
+          </view>
+          <view class="card-row card-row-sub">
+            <text class="card-date">📅 {{item.bookingDate}}</text>
+            <text class="card-time">🕐 {{item.bookingTime}}<text wx:if="{{item.bookingEndTime}}"> - {{item.bookingEndTime}}</text></text>
+          </view>
+          <view class="card-row card-row-extra" wx:if="{{item.userNickName || item.displayPhone}}">
+            <text class="card-extra" wx:if="{{item.userNickName}}">🏷️ {{item.userNickName}}</text>
+            <text class="card-extra" wx:if="{{item.displayPhone}}">📞 {{item.displayPhone}}</text>
+          </view>
+          <view class="card-remark" wx:if="{{item.remark}}">
+            <text class="remark-text">📝 {{item.remark}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+</scroll-view>

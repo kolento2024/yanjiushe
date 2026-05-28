@@ -1,0 +1,142 @@
+<!--pages/add-student/add-student.wxml-->
+<navigation-bar title="添加学员" background="#FFFFFF" color="#3D3D3D"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <view class="form-area">
+
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="title-dot" style="background: #D48B8B"></view>
+        <text>基本信息</text>
+      </view>
+
+      <view class="form-item">
+        <view class="item-label">
+          <text class="label-text">学员姓名</text>
+          <text class="label-required">*</text>
+        </view>
+        <input
+          class="form-input"
+          value="{{name}}"
+          placeholder="请输入学员真实姓名"
+          bindinput="onNameInput"
+        />
+      </view>
+
+      <view class="form-item">
+        <view class="item-label">
+          <text class="label-text">联系方式</text>
+          <text class="label-required">*</text>
+        </view>
+        <input
+          class="form-input"
+          value="{{phone}}"
+          type="number"
+          maxlength="11"
+          placeholder="请输入手机号或微信号"
+          bindinput="onPhoneInput"
+        />
+      </view>
+    </view>
+
+    <!-- 预约项目 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="title-dot" style="background: #C9A96E"></view>
+        <text>预约项目</text>
+        <text class="label-required">*</text>
+      </view>
+
+      <view class="service-list">
+        <view
+          class="service-tag {{selectedServiceId === item.id ? 'selected' : ''}}"
+          wx:for="{{services}}"
+          wx:key="id"
+          bindtap="onServiceSelect"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}"
+        >
+          <text class="service-name">{{item.name}}</text>
+          <text class="service-price">¥{{item.price}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 缴费状态 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="title-dot" style="background: #6BBFA0"></view>
+        <text>缴费状态</text>
+        <text class="label-required">*</text>
+      </view>
+
+      <view class="option-row">
+        <view
+          class="option-card {{paymentStatus === item.value ? 'selected' : ''}}"
+          wx:for="{{paymentStatusList}}"
+          wx:key="value"
+          bindtap="onPaymentSelect"
+          data-value="{{item.value}}"
+        >
+          <view class="option-icon-wrap">
+            <text class="option-icon">{{item.value === 'paid' ? '✅' : '⏳'}}</text>
+          </view>
+          <text class="option-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 预约状态 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="title-dot" style="background: #A78BFA"></view>
+        <text>预约状态</text>
+        <text class="label-required">*</text>
+      </view>
+
+      <view class="option-row option-row-three">
+        <view
+          class="option-card {{bookingStatus === item.value ? 'selected' : ''}}"
+          wx:for="{{bookingStatusList}}"
+          wx:key="value"
+          bindtap="onBookingSelect"
+          data-value="{{item.value}}"
+        >
+          <view class="option-icon-wrap">
+            <text class="option-icon">{{item.value === 'available' ? '🟢' : (item.value === 'unavailable' ? '🔴' : '🟡')}}</text>
+          </view>
+          <text class="option-label">{{item.label}}</text>
+          <text class="option-tip">{{item.tip}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-section">
+      <view class="section-title">
+        <view class="title-dot" style="background: #CCC"></view>
+        <text>备注（选填）</text>
+      </view>
+      <textarea
+        class="form-textarea"
+        value="{{remark}}"
+        placeholder="可填写额外信息，如缴费金额、特殊要求等"
+        maxlength="200"
+        bindinput="onRemarkInput"
+      />
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-bar">
+      <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="{{submitting ? '' : 'onSubmit'}}">
+        <text>{{submitting ? '提交中...' : '确认添加'}}</text>
+      </view>
+    </view>
+
+  </view>
+
+  <view class="bottom-space"></view>
+
+</scroll-view>

@@ -1,0 +1,285 @@
+/**pages/student-list/student-list.wxss**/
+page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #FDF8F5;
+}
+
+.scrollarea {
+  flex: 1;
+}
+
+/* ====== 搜索面板 ====== */
+.search-panel {
+  margin: 24rpx 28rpx;
+  background: #FFF;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+}
+
+.search-bar {
+  margin-bottom: 20rpx;
+}
+
+.search-input-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #FDF8F5;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  height: 80rpx;
+}
+
+.search-icon {
+  font-size: 30rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #3D3D3D;
+  min-width: 0;
+}
+
+.clear-name {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: #E8E0D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+.clear-name text {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.filter-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.filter-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.date-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: linear-gradient(135deg, #FDF0F0, #FDF8F5);
+  border: 1rpx solid #F0E6E6;
+  border-radius: 32rpx;
+  padding: 12rpx 24rpx;
+}
+
+.date-icon {
+  font-size: 26rpx;
+  margin-right: 8rpx;
+}
+
+.date-text {
+  font-size: 26rpx;
+  color: #3D3D3D;
+}
+
+.date-arrow {
+  font-size: 20rpx;
+  color: #BBB;
+  margin-left: 8rpx;
+}
+
+.clear-date {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: #D48B8B;
+}
+
+.search-btn {
+  width: 100%;
+  height: 80rpx;
+  background: linear-gradient(135deg, #D48B8B, #C07474);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.search-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.search-btn text {
+  color: #FFF;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+/* ====== 加载中 ====== */
+.loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 4rpx solid #F0EBE6;
+  border-top-color: #D48B8B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ====== 空状态 ====== */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 160rpx;
+}
+
+.empty-icon-wrap {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FDF0F0, #FDF8F5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(212, 139, 139, 0.1);
+}
+
+.empty-icon {
+  font-size: 64rpx;
+  opacity: 0.7;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #3D3D3D;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* ====== 结果列表 ====== */
+.result-list {
+  padding: 0 28rpx;
+}
+
+.result-count {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+  padding: 0 8rpx;
+}
+
+.student-card {
+  background: #FFF;
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.student-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: linear-gradient(180deg, #D48B8B, #F0C0C0);
+  border-radius: 0 3rpx 3rpx 0;
+}
+
+.student-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+
+.student-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3D3D3D;
+}
+
+.student-phone {
+  font-size: 26rpx;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.student-mid {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.service-tag {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.status-tag {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  line-height: 1.5;
+}
+
+.status-paid {
+  background: #E8F5ED;
+  color: #6BBFA0;
+}
+
+.status-unpaid {
+  background: #FFF0F0;
+  color: #D48B8B;
+}
+
+.student-bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.student-time {
+  font-size: 22rpx;
+  color: #BBB;
+}
+
+/* ====== 底部占位 ====== */
+.bottom-space {
+  height: 60rpx;
+}
