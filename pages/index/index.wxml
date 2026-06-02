@@ -40,7 +40,7 @@
               <text class="feature-tag" wx:for="{{item.features}}" wx:for-item="f" wx:key="*this">{{f}}</text>
             </view>
             <view class="service-bottom">
-              <view class="service-price-wrap">
+              <view class="service-price-wrap" hidden>
                 <text class="service-price-symbol">¥</text>
                 <text class="service-price">{{item.price}}</text>
               </view>

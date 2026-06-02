@@ -12,7 +12,17 @@ Page({
   },
 
   onShow() {
+    this.initDateFilter()
     this.fetchStudents()
+  },
+
+  // 初始化日期筛选（默认今天）
+  initDateFilter() {
+    const today = new Date()
+    this.setData({
+      searchDate: this.formatDate(today),
+      searchDateText: '今天'
+    })
   },
 
   // 从云数据库拉取学员

@@ -1,6 +1,6 @@
 // pages/book/book.js
 const { addLog } = require('../../utils/operations')
-const { notifyShopOwner } = require('../../utils/notify')
+const { notifyShopOwner, saveNotification } = require('../../utils/notify')
 
 Page({
   data: {
@@ -79,6 +79,8 @@ Page({
     dateText: '',
     name: '',
     phone: '',
+    courseProgress: '',
+    courseProgressOptions: ['0节', '1节', '2节', '3节', '4节', '5节', '6节'],
     remark: '',
 
     // 日期相关
@@ -341,6 +343,12 @@ Page({
     this.setData({ phone: e.detail.value })
   },
 
+  // 选择课程进度
+  onCourseProgressChange(e) {
+    const index = e.detail.value
+    this.setData({ courseProgress: this.data.courseProgressOptions[index] })
+  },
+
   // 输入备注
   onRemarkInput(e) {
     this.setData({ remark: e.detail.value })
@@ -573,7 +581,7 @@ Page({
 
   // 执行实际预约提交
   doSubmitBooking(selectedService, matchedStudent) {
-    const { selectedDate, selectedTimes, name, phone, remark } = this.data
+    const { selectedDate, selectedTimes, name, phone, courseProgress, remark } = this.data
     const userInfo = wx.getStorageSync('userInfo') || {}
     const studentPhone = matchedStudent.phone || ''
 
@@ -591,6 +599,7 @@ Page({
         dateText: this.data.dateText,
         name: name.trim(),
         phone: phone.trim(),
+        courseProgress: courseProgress,
         studentPhone: studentPhone,
         studentId: matchedStudent._id || '',
         userNickName: userInfo.nickName || '',
@@ -740,6 +749,7 @@ Page({
       dateText: '今天',
       name: '',
       phone: '',
+      courseProgress: '',
       remark: ''
     })
     this.generateTimeSlots()

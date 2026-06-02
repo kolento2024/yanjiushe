@@ -15,6 +15,9 @@
     <view class="filter-today-btn" bindtap="onFilterToday">
       <text>今天</text>
     </view>
+    <view class="filter-clear-btn" bindtap="onClearFilter" wx:if="{{filterDate}}">
+      <text>清除</text>
+    </view>
   </view>
 
   <!-- 加载中 -->

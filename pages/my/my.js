@@ -28,6 +28,10 @@ Page({
     if (!this._loaded) {
       this.loadUserInfo()
       this.checkSubscribeStatus()
+    } else {
+      // 每次打开页面都尝试静默续期订阅凭证
+      // 如果店长之前勾选了"总是保持以上选择，不再询问"，完全静默不弹窗
+      this._silentRenewSubscribe()
     }
   },
 
@@ -39,11 +43,36 @@ Page({
       .doc('shop_owner')
       .get()
       .then(res => {
-        this.setData({ subscribed: !!(res.data && res.data.openid) })
+        const subscribed = !!(res.data && res.data.openid)
+        this.setData({ subscribed })
+        // 已订阅就尝试静默续期
+        if (subscribed) this._silentRenewSubscribe()
       })
       .catch(() => {
         this.setData({ subscribed: false })
       })
+  },
+
+  // 静默续期订阅凭证（已勾选"不再询问"时不弹窗）
+  _silentRenewSubscribe() {
+    const { TMPL_ID } = require('../../utils/notify')
+    if (!TMPL_ID || TMPL_ID === 'TEMPLATE_ID_PLACEHOLDER') return
+    if (!this.data.subscribed) return  // 还没订阅过就不续期
+
+    wx.requestSubscribeMessage({
+      tmplIds: [TMPL_ID],
+      success: (res) => {
+        if (res[TMPL_ID] === 'accept') {
+          console.log('[续期] 订阅凭证已续期')
+        }
+      },
+      fail: (err) => {
+        // errMsg 包含 "cancel" 表示用户手动拒绝了弹窗，不算错误
+        if (err.errMsg && err.errMsg.indexOf('cancel') > -1) {
+          console.log('[续期] 用户取消续期弹窗')
+        }
+      }
+    })
   },
 
   // 订阅通知（店长专属）

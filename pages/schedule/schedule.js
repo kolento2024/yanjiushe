@@ -99,7 +99,8 @@ Page({
 
     this.setData({
       dateFilters: filters,
-      filterLabel: filters[0].label
+      filterLabel: filters[1].label,
+      filterDate: filters[1].date
     })
   },
 

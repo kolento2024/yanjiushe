@@ -77,7 +77,11 @@
                 <text class="info-icon">👤</text>
                 <text class="info-text">{{booking.name}}</text>
               </view>
-              <view class="course-info-item">
+              <view class="course-info-item" wx:if="{{booking.courseProgress}}">
+                <text class="info-icon">📚</text>
+                <text class="info-text">已学{{booking.courseProgress}}</text>
+              </view>
+              <view class="course-info-item" hidden>
                 <text class="info-icon">📞</text>
                 <text class="info-text">{{booking.phoneMasked}}</text>
               </view>
@@ -88,7 +92,7 @@
             </view>
           </view>
           <view class="course-action">
-            <view class="course-price">¥{{booking.servicePrice}}</view>
+            <view class="course-price" hidden>¥{{booking.servicePrice}}</view>
             <view class="cancel-btn {{booking.canCancel ? '' : 'disabled'}}" bindtap="cancelBooking" data-id="{{booking._id}}">
               <text>{{booking.canCancel ? '取消' : '已截止'}}</text>
             </view>

@@ -1,6 +1,6 @@
 // pages/roster/roster.js
 const { addLog } = require('../../utils/operations')
-const { notifyShopOwner } = require('../../utils/notify')
+const { notifyShopOwner, saveNotification } = require('../../utils/notify')
 
 Page({
   data: {
@@ -77,7 +77,8 @@ Page({
 
     this.setData({
       dateFilters: filters,
-      filterLabel: filters[0].label
+      filterLabel: filters[1].label,
+      filterDate: filters[1].date
     })
   },
 

@@ -70,6 +70,10 @@
                 <text class="info-icon">👤</text>
                 <text class="info-text">{{booking.name}}</text>
               </view>
+              <view class="course-info-item" wx:if="{{booking.courseProgress}}">
+                <text class="info-icon">📚</text>
+                <text class="info-text">已学{{booking.courseProgress}}</text>
+              </view>
               <view class="course-info-item" wx:if="{{booking.userNickName}}">
                 <text class="info-icon">🏷️</text>
                 <text class="info-text">{{booking.userNickName}}</text>

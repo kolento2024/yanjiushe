@@ -389,7 +389,7 @@ page {
 }
 
 .input-label {
-  width: 100rpx;
+  width: 140rpx;
   font-size: 28rpx;
   color: #3D3D3D;
   font-weight: 500;
@@ -403,8 +403,13 @@ page {
   color: #3D3D3D;
 }
 
-.input-field::placeholder {
-  color: #CCC;
+.input-field.picker-placeholder,
+.input-field.picker-placeholder text {
+  color: #999;
+}
+
+.ph-color {
+  color: #999;
 }
 
 .remark-item {

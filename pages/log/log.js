@@ -24,6 +24,7 @@ Page({
   },
 
   onShow() {
+    this.initFilterDate()
     this.loadLogs()
   },
 
@@ -62,6 +63,15 @@ Page({
   // 快速切回今天
   onFilterToday() {
     this.initFilterDate()
+    this.applyFilter()
+  },
+
+  // 清除日期筛选
+  onClearFilter() {
+    this.setData({
+      filterDate: '',
+      filterDateText: '全部日期'
+    })
     this.applyFilter()
   },
 
