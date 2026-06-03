@@ -1,6 +1,14 @@
 // pages/my/my.js
 Page({
   data: {
+    // 用户角色
+    role: 'student', // 'student' | 'manager'
+    showAuthModal: false,
+    authCode: '',
+    authError: '',
+    // tab-bar 刷新触发器
+    tabUpdateTrigger: 0,
+
     // 用户信息
     isLoggedIn: false,
     userInfo: {
@@ -20,6 +28,7 @@ Page({
 
   onLoad() {
     this._loaded = true
+    this.loadRole()
     this.loadUserInfo()
     this.checkSubscribeStatus()
   },
@@ -33,6 +42,85 @@ Page({
       // 如果店长之前勾选了"总是保持以上选择，不再询问"，完全静默不弹窗
       this._silentRenewSubscribe()
     }
+  },
+
+  // 加载本地缓存的角色
+  loadRole() {
+    try {
+      const role = wx.getStorageSync('userRole')
+      if (role === 'manager') {
+        this.setData({ role: 'manager' })
+      } else {
+        this.setData({ role: 'student' })
+      }
+    } catch (e) {
+      this.setData({ role: 'student' })
+    }
+  },
+
+  // 点击角色角标
+  onRoleBadgeTap() {
+    if (this.data.role === 'manager') {
+      // 已是店长，询问是否切换到学员
+      wx.showModal({
+        title: '提示',
+        content: '是否要切换到学员角色？',
+        success: (res) => {
+          if (res.confirm) {
+            this.switchToStudent()
+          }
+        }
+      })
+    } else {
+      // 学员角色，显示授权弹窗
+      this.setData({
+        showAuthModal: true,
+        authCode: '',
+        authError: ''
+      })
+    }
+  },
+
+  // 切换到学员角色
+  switchToStudent() {
+    wx.setStorageSync('userRole', 'student')
+    this.setData({
+      role: 'student',
+      tabUpdateTrigger: this.data.tabUpdateTrigger + 1
+    })
+    wx.showToast({ title: '已切换为学员角色', icon: 'success' })
+  },
+
+  // 输入授权码
+  onAuthCodeInput(e) {
+    this.setData({ authCode: e.detail.value, authError: '' })
+  },
+
+  // 确认授权
+  confirmAuth() {
+    if (this.data.authCode !== '1007') {
+      this.setData({ authError: '授权码错误' })
+      return
+    }
+    // 授权成功
+    wx.setStorageSync('userRole', 'manager')
+    this.setData({
+      role: 'manager',
+      showAuthModal: false,
+      authCode: '',
+      authError: '',
+      tabUpdateTrigger: this.data.tabUpdateTrigger + 1
+    })
+    wx.showToast({ title: '已为您开启店长权限', icon: 'success' })
+  },
+
+  // 取消授权弹窗
+  cancelAuth() {
+    this.setData({
+      showAuthModal: false,
+      authCode: '',
+      authError: ''
+    })
   },
 
   // 检查是否已订阅通知（读取云数据库中的店长 openid）

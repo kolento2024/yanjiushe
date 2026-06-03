@@ -16,6 +16,7 @@ page {
 }
 
 .user-card {
+  position: relative;
   background: #FFF;
   border-radius: 24rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
@@ -200,4 +201,138 @@ page {
 /* 底部占位 */
 .bottom-space {
   height: 32rpx;
+}
+
+/* ====== 角色角标 ====== */
+.role-badge {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.role-badge.student {
+  background: #FDF0F0;
+  color: #D48B8B;
+  border: 2rpx solid #F5E6E6;
+}
+
+.role-badge.manager {
+  background: linear-gradient(135deg, #D48B8B, #C07474);
+  color: #FFF;
+}
+
+/* ====== 授权弹窗 ====== */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-modal {
+  width: 560rpx;
+  background: #FFF;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.auth-modal-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 32rpx 20rpx;
+}
+
+.auth-modal-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #3D3D3D;
+}
+
+.auth-modal-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #BBB;
+  border-radius: 50%;
+}
+
+.auth-modal-close:active {
+  background: #F5F0EB;
+}
+
+.auth-modal-body {
+  padding: 0 32rpx 24rpx;
+}
+
+.auth-modal-desc {
+  font-size: 26rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.auth-code-input {
+  width: 100%;
+  height: 88rpx;
+  background: #FDF8F5;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: #3D3D3D;
+  text-align: center;
+  letter-spacing: 8rpx;
+  box-sizing: border-box;
+}
+
+.auth-error {
+  font-size: 24rpx;
+  color: #E74C3C;
+  display: block;
+  text-align: center;
+  margin-top: 16rpx;
+}
+
+.auth-modal-footer {
+  display: flex;
+  flex-direction: row;
+  border-top: 1rpx solid #F5F0EB;
+}
+
+.auth-btn {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.auth-btn.cancel {
+  color: #999;
+  border-right: 1rpx solid #F5F0EB;
+}
+
+.auth-btn.confirm {
+  color: #D48B8B;
+  font-weight: 600;
+}
+
+.auth-btn:active {
+  background: #FDF8F8;
 }

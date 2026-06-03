@@ -401,6 +401,8 @@ page {
   height: 72rpx;
   font-size: 28rpx;
   color: #3D3D3D;
+  display: flex;
+  align-items: center;
 }
 
 .input-field.picker-placeholder,
@@ -417,10 +419,16 @@ page {
   padding: 24rpx 0;
 }
 
+.remark-item .input-label {
+  padding-top: 8rpx;
+}
+
 .remark-field {
-  min-height: 80rpx;
+  min-height: 100rpx;
   padding: 8rpx 0;
   line-height: 1.6;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ====== 提交区域 ====== */

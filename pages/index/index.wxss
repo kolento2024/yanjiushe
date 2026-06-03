@@ -227,7 +227,7 @@ page {
   display: flex;
   flex-direction: row;
   white-space: nowrap;
-  height: 260rpx;
+  height: 300rpx;
 }
 
 .review-card {
@@ -240,6 +240,7 @@ page {
   padding: 32rpx;
   margin-right: 24rpx;
   white-space: normal;
+  overflow: visible;
 }
 
 .review-header {

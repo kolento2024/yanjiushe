@@ -6,6 +6,11 @@
   <!-- 用户信息区 -->
   <view class="user-section">
     <view class="user-card">
+      <!-- 角色角标 -->
+      <view class="role-badge {{role === 'manager' ? 'manager' : 'student'}}" bindtap="onRoleBadgeTap">
+        <text>{{role === 'manager' ? '店长' : '学员'}}</text>
+      </view>
+
       <!-- 未登录 -->
       <block wx:if="{{!isLoggedIn}}">
         <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
@@ -81,5 +86,33 @@
 
 </scroll-view>
 
+<!-- 授权弹窗 -->
+<view class="auth-overlay" wx:if="{{showAuthModal}}" catchtouchmove="preventTouchMove">
+  <view class="auth-modal">
+    <view class="auth-modal-header">
+      <text class="auth-modal-title">店长授权</text>
+      <text class="auth-modal-close" bindtap="cancelAuth">✕</text>
+    </view>
+    <view class="auth-modal-body">
+      <text class="auth-modal-desc">请输入店长授权码以开启店长权限</text>
+      <input
+        class="auth-code-input"
+        type="number"
+        password
+        placeholder="请输入授权码"
+        value="{{authCode}}"
+        bindinput="onAuthCodeInput"
+        maxlength="6"
+        focus="{{showAuthModal}}"
+      />
+      <text class="auth-error" wx:if="{{authError}}">{{authError}}</text>
+    </view>
+    <view class="auth-modal-footer">
+      <view class="auth-btn cancel" bindtap="cancelAuth">取消</view>
+      <view class="auth-btn confirm" bindtap="confirmAuth">确认</view>
+    </view>
+  </view>
+</view>
+
 <!-- 底部菜单 -->
-<tab-bar current="my"></tab-bar>
+<tab-bar current="my" role-trigger="{{tabUpdateTrigger}}"></tab-bar>

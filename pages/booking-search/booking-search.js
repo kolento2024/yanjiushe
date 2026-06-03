@@ -6,6 +6,9 @@ Page({
     searchDate: '',
     searchDateText: '全部日期',
 
+    // 今日日期
+    todayDate: '',
+
     // 查询结果
     results: [],
     loading: false,
@@ -23,7 +26,24 @@ Page({
   },
 
   onLoad() {
+    this.initDefaultDate()
     this.onSearch()
+  },
+
+  // 初始化默认日期为今天
+  initDefaultDate() {
+    const today = new Date()
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六']
+    const y = today.getFullYear()
+    const m = (today.getMonth() + 1).toString().padStart(2, '0')
+    const d = today.getDate().toString().padStart(2, '0')
+    const week = weekDays[today.getDay()]
+    const dateStr = y + '-' + m + '-' + d
+    this.setData({
+      todayDate: dateStr,
+      searchDate: dateStr,
+      searchDateText: (today.getMonth() + 1) + '月' + today.getDate() + '日 周' + week
+    })
   },
 
   // 输入姓名
