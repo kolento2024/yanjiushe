@@ -10,7 +10,7 @@
         <text class="search-icon">🔍</text>
         <input
           class="search-input"
-          placeholder="输入学员姓名搜索"
+          placeholder="输入学员名称搜索"
           value="{{searchName}}"
           bindinput="onNameInput"
           confirm-type="search"

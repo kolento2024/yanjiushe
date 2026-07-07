@@ -11,7 +11,7 @@
         <text class="search-icon">🔍</text>
         <input
           class="search-input"
-          placeholder="请输入学员姓名"
+          placeholder="请输入学员名称"
           value="{{searchName}}"
           bindinput="onNameInput"
           confirm-type="search"

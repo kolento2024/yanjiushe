@@ -98,11 +98,11 @@ Page({
             paymentStatus, bookingStatus, remark } = this.data
 
     if (!name.trim()) {
-      wx.showToast({ title: '请输入学员姓名', icon: 'none' })
+      wx.showToast({ title: '请输入学员名称', icon: 'none' })
       return
     }
     if (!phone.trim()) {
-      wx.showToast({ title: '请输入手机号', icon: 'none' })
+      wx.showToast({ title: '请输入激活码', icon: 'none' })
       return
     }
     if (!/^1[3-9]\d{9}$/.test(phone.trim())) {

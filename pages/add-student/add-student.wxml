@@ -14,7 +14,7 @@
 
       <view class="form-item">
         <view class="item-label">
-          <text class="label-text">学员姓名</text>
+          <text class="label-text">学员名称</text>
           <text class="label-required">*</text>
         </view>
         <input
@@ -27,7 +27,7 @@
 
       <view class="form-item">
         <view class="item-label">
-          <text class="label-text">联系方式</text>
+          <text class="label-text">备注信息</text>
           <text class="label-required">*</text>
         </view>
         <input
@@ -35,7 +35,7 @@
           value="{{phone}}"
           type="number"
           maxlength="11"
-          placeholder="请输入手机号或微信号"
+          placeholder="请输入学员备注信息"
           bindinput="onPhoneInput"
         />
       </view>

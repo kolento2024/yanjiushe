@@ -84,6 +84,7 @@ function addLog(type, params) {
 
   return db.collection(COLLECTION).add({
     data: {
+      _id: logItem._id, // 同步本地 _id，确保合并去重能匹配
       type,
       time,
       detail,
